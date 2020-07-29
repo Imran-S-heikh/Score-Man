@@ -1,9 +1,11 @@
-import React, { useRef } from 'react'
-import { View, Text, StyleSheet, Animated, PanResponder, Easing } from 'react-native'
-import { Overlay } from 'react-native-elements';
+import React, { useRef, useState } from 'react'
+import { View, Text, StyleSheet, Animated, PanResponder, Easing, TouchableOpacity } from 'react-native'
+import { Overlay, Icon, Divider } from 'react-native-elements';
+import { useNavigation } from '@react-navigation/native';
 
 const HEAD = 'HEAD';
 const TAIL = 'TAIL';
+const TIME = 5000;
 
 
 const styles = StyleSheet.create({
@@ -37,9 +39,13 @@ const styles = StyleSheet.create({
 
 
 
-export default function TossCoin({visible}) {
+export default function TossCoin({ call, handler,chooseHandler }) {
 
     const value = useRef(new Animated.Value(0)).current
+    const [tossWin, setTossWin] = useState(null);
+    const [tossMassage, setTossMessage] = useState('');
+    const [resultOpen, setResultOpen] = useState(false);
+    const navigation = useNavigation();
 
     const panResponder = useRef(
         PanResponder.create({
@@ -75,14 +81,27 @@ export default function TossCoin({visible}) {
     ).current
 
     const handleRotate = (newValue) => {
-        console.log(newValue)
+        isWin(newValue);
         Animated.timing(value, {
             toValue: newValue * -1,
-            duration: 5000,
+            duration: TIME,
             // easing: Easing.out(Easing.quad),
             easing: Easing.out(Easing.quad),
             useNativeDriver: true,
         }).start()
+    }
+
+    const isWin = (flip) => {
+        setTimeout(() => {
+            if (flip % 2 == 0) {
+                setTossMessage('You Lose The Toss');
+            } else {
+                setTossMessage('You Won The Toss');
+            }
+            setTimeout(() => {
+                setResultOpen(true)
+            }, 1000)
+        }, TIME);
     }
 
     const rotate = value.interpolate({
@@ -97,40 +116,72 @@ export default function TossCoin({visible}) {
 
 
     return (
-        <View {...panResponder.panHandlers}>
-            <Overlay isVisible={!!visible} overlayStyle={{ backgroundColor: 'transparent', padding: 0 }}>
-                <View style={{ width: 200, height: 200 }} >
-                    <Animated.View style={{
-                        ...styles.card,
-                        ...styles.head,
-                        transform: [
-                            { rotateX: rotateZ },
-                            { perspective: 1000 }
-                        ]
-                    }}>
-                        <View>
-                            <Text style={styles.text}>
-                                HEAD
-                            </Text>
+        <View>
+            <View {...panResponder.panHandlers}>
+                <Overlay isVisible={!!call} overlayStyle={{ backgroundColor: 'transparent', padding: 0 }}>
+                    <View style={{ width: 200, height: 200 }} >
+                        <Animated.View style={{
+                            ...styles.card,
+                            ...styles.tail,
+                            transform: [
+                                { rotateX: rotateZ },
+                                { perspective: 1000 }
+                            ]
+                        }}>
+                            <View>
+                                <Text style={styles.text}>
+                                    {call}
+                                </Text>
+                            </View>
+                        </Animated.View>
+                        <Animated.View style={{
+                            ...styles.card,
+                            ...styles.head,
+                            backfaceVisibility: 'hidden',
+                            transform: [
+                                { rotateX: rotate },
+                                { perspective: 1000 }
+                            ],
+                        }}>
+                            <View>
+                                <Text style={styles.text}>
+                                    {call === HEAD ? TAIL : HEAD}
+                                </Text>
+                            </View>
+                        </Animated.View>
+
+                    </View>
+                </Overlay>
+            </View>
+            <View>
+                <Overlay isVisible={resultOpen} overlayStyle={{ marginTop: '95%' }}>
+                    <View style={{ position: 'relative' }}>
+                        <View style={{ position: 'absolute', top: -300, right: -20, width: 150 }}>
+                            <Text style={{ fontSize: 30, color: 'lightgrey', fontWeight: 'bold' }}>{tossMassage}</Text>
                         </View>
-                    </Animated.View>
-                    <Animated.View style={{
-                        ...styles.card,
-                        ...styles.tail,
-                        backfaceVisibility: 'hidden',
-                        transform: [
-                            { rotateX: rotate },
-                            { perspective: 1000 }
-                        ],
-                    }}>
-                        <View>
-                            <Text style={styles.text}>
-                                TAIL
-                            </Text>
+                        <View style={{display: 'flex',flexDirection: 'row'}}>
+                            <TouchableOpacity style={{
+                                backgroundColor: 'lightgray',
+                                padding: 10,
+                                borderRadius: 5,
+                                marginRight: 3
+                            }} onPress={() => handler(null)}>
+                                <Icon name="reload1" type="antdesign" />
+                                <Text> Reload </Text>
+                            </TouchableOpacity>
+                            {/* <Divider/> */}
+                            <TouchableOpacity style={{
+                                backgroundColor: 'lightgray',
+                                padding: 10,
+                                borderRadius: 5,
+                            }} onPress={() => {chooseHandler(false);navigation.navigate('Home')}}>
+                                <Icon name="close" type="antdesign" />
+                                <Text> Close </Text>
+                            </TouchableOpacity>
                         </View>
-                    </Animated.View>
-                </View>
-            </Overlay>
+                    </View>
+                </Overlay>
+            </View>
         </View>
     )
 }

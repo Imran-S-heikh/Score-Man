@@ -11,21 +11,27 @@ const TAIL = 'TAIL';
 
 export default function Toss() {
 
-    const [call, setCall] = useState(null);
+    const [call, setCall] = useState(false);
+    const [tossChooseOpen, setTossChooseOpen] = useState(true);
     const { appState, dispatch } = useContext(AppContext);
 
     const handleCall = (value) => {
         setCall(value);
     }
 
+    const handleChoose = (value)=>{
+        setTossChooseOpen(value)
+        setCall(false)
+    }
+
 
     if (!call) return <TossChoose handler={handleCall} />
-    return <TossCoin visible={call} />
+    return <TossCoin call={call} handler={handleCall} chooseHandler={handleChoose}/>
 }
 
 function TossChoose({ handler }) {
     return (
-        <Overlay isVisible={true} overlayStyle={{ backgroundColor: 'transparent', padding: 0 }}>
+        <View style={{ backgroundColor: 'rgba(0,0,0,.5)', padding: 0,flexGrow: 1,justifyContent: 'center',alignItems: 'center' }}>
             <View style={{ display: 'flex', flexDirection: 'row', width: '80%' }}>
                 <View style={{ flexGrow: 1 }}>
                     <Button onPress={() => handler(HEAD)} title="HEAD" buttonStyle={styles.head} titleStyle={styles.button} />
@@ -34,7 +40,7 @@ function TossChoose({ handler }) {
                     <Button onPress={() => handler(TAIL)} title="TAIL" buttonStyle={styles.tail} titleStyle={styles.button} />
                 </View>
             </View>
-        </Overlay>
+        </View>
     )
 }
 

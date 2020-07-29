@@ -4,7 +4,9 @@ import Toss from '../../components/Toss'
 
 function Home() {
     return (
-        <Toss/>
+        <View>
+            <Text>Hasif is here</Text>
+        </View>
     )
 }
 
