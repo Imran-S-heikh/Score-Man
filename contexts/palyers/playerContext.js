@@ -11,7 +11,9 @@ export default function PlayerContextProvider(props) {
     useEffect(()=>{
         const getPlayers = async ()=>{
             const data = await AsyncStorage.getItem('@players')
-            dispatch({type: SET_PLAYERS,value: JSON.parse(data)})
+            if(data){
+                dispatch({type: SET_PLAYERS,value: JSON.parse(data)})
+            }
         }
         getPlayers();
     },[])

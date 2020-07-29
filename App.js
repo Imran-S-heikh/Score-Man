@@ -19,6 +19,7 @@ import AppContextProvider from './contexts/appContext/appContext';
 import CreateMatch from './screens/tabs/createMatch';
 import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import Toss from './components/Toss';
+import LiveMatch from './screens/drawer/liveMatch';
 
 
 const Stack = createStackNavigator();
@@ -34,6 +35,7 @@ function Body() {
     <Drawer.Navigator>
       <Drawer.Screen name="Home" component={Home} />
       <Drawer.Screen name="Players" component={PlayersWraper} />
+      <Drawer.Screen name="Live Match" component={LiveMatch} />
       <Drawer.Screen name="Do a Toss" component={Toss} />
     </Drawer.Navigator>
   )

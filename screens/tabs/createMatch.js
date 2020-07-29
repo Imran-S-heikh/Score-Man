@@ -3,6 +3,9 @@ import { View, Text, StyleSheet } from 'react-native'
 import PlayerContextProvider, { PlayerContext } from '../../contexts/palyers/playerContext'
 import { Input, CheckBox, ListItem, Button, Icon, Overlay, Divider } from 'react-native-elements';
 import { ScrollView } from 'react-native-gesture-handler';
+import MatchContextProvider, { MatchContext } from '../../contexts/match/matchContext';
+import { uuid } from '../../utils';
+import { CREATE_MATCH } from '../../contexts/match/matchTypes';
 
 const styles = StyleSheet.create({
     inline: {
@@ -46,6 +49,37 @@ function CreateMatch() {
     const [bowlingTeam, setBowlingTeam] = useState(null);
     const [inputDisabled, setInputDisabled] = useState(false);
     const { players } = useContext(PlayerContext);
+    const {match,dispatch} = useContext(MatchContext);
+
+
+
+    const createMatch = () => {
+
+        const newMatch = {
+            id: uuid(),
+            teamOne: {
+                name: teamOneName,
+                players: teamOnePlayers,
+                score: '',
+                extra: 0,
+                highlight: [],
+                batting: [],
+                bowling: []
+            },
+            teamTwo: {
+                name: teamTwoName,
+                players: teamTwoPlayers,
+                score: '',
+                extra: 0,
+                highlight: [],
+                batting: [],
+                bowling: []
+            },
+            battingTeam,
+            bowlingTeam
+        }
+        dispatch({type: CREATE_MATCH,value: newMatch})
+    }
 
 
     useEffect(() => {
@@ -204,12 +238,14 @@ function CreateMatch() {
                 </ScrollView>
             </View>
             <View style={{ height: '10%' }}>
-                <Button title="Create Match" buttonStyle={{ height: "100%", backgroundColor: 'green', borderRadius: -1 }} />
+                <Button onPress={createMatch} title="Create Match" buttonStyle={{ height: "100%", backgroundColor: 'green', borderRadius: -1 }} />
             </View>
         </View>
     )
 }
 
 export default () => <PlayerContextProvider>
-    <CreateMatch />
+    <MatchContextProvider>
+        <CreateMatch />
+    </MatchContextProvider>
 </PlayerContextProvider>

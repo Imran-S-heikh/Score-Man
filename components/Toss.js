@@ -12,7 +12,6 @@ const TAIL = 'TAIL';
 export default function Toss() {
 
     const [call, setCall] = useState(false);
-    const [tossChooseOpen, setTossChooseOpen] = useState(true);
     const { appState, dispatch } = useContext(AppContext);
 
     const handleCall = (value) => {
@@ -20,7 +19,6 @@ export default function Toss() {
     }
 
     const handleChoose = (value)=>{
-        setTossChooseOpen(value)
         setCall(false)
     }
 
