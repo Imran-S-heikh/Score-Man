@@ -1,6 +1,8 @@
+let count = 0
 export const uuid = ()=>{
     var d = new Date().getTime();//Timestamp
     var d2 = (performance && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+    console.log('called',count++)
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16;//random number between 0 and 16
         if(d > 0){//Use timestamp until depleted
