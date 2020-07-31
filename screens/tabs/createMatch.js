@@ -116,14 +116,15 @@ function CreateMatch() {
         setTargetTeam(teamTwoName);
     }
 
-    const handleBattingTeam = (team) => {
-        setBattingTeam(team);
+    const handleBattingTeam = (teamName) => {
         setBattingTeamOverlay(false)
         setInputDisabled(true)
-        if (team === teamOneName) {
-            setBowlingTeam(teamTwoName);
-        } else if (team === teamTwoName) {
-            setBowlingTeam(teamOneName);
+        if (teamName === teamOneName) {
+            setBattingTeam({name: teamOneName,ref: 'teamOne'});
+            setBowlingTeam({name: teamTwoName,ref: 'teamTwo'});
+        } else if (teamName === teamTwoName) {
+            setBattingTeam({name: teamTwoName,ref: 'teamTwo'});
+            setBowlingTeam({name: teamOneName,ref: 'teamOne'});
         }
     }
 
@@ -214,12 +215,12 @@ function CreateMatch() {
                                 <View style={styles.inline}>
                                     <View style={styles.inlineItem}>
                                         <Text style={styles.title}>Batting Team</Text>
-                                        <Text style={styles.teamName}>{battingTeam}</Text>
+                                        <Text style={styles.teamName}>{battingTeam.name}</Text>
                                     </View>
                                     <View style={{ width: 6 }} />
                                     <View style={styles.inlineItem}>
                                         <Text style={styles.title}>Bowling Team</Text>
-                                        <Text style={styles.teamName}>{bowlingTeam}</Text>
+                                        <Text style={styles.teamName}>{bowlingTeam.name}</Text>
                                     </View>
                                 </View>
                         }

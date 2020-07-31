@@ -1,9 +1,10 @@
 import React, { useContext, useState, useRef, useEffect } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import MatchContextProvider, { MatchContext } from '../../contexts/match/matchContext'
-import { Divider, Button } from 'react-native-elements';
+import { Divider, Button, Badge, Overlay } from 'react-native-elements';
 import { ScrollView } from 'react-native-gesture-handler';
 import { uuid } from '../../utils';
+import Popup from '../../components/Popup';
 
 const styles = StyleSheet.create({
     teamName: {
@@ -125,23 +126,46 @@ function LiveMatch() {
 
     const { match, dispatch } = useContext(MatchContext);
     const [highlight, setHighlight] = useState([]);
-    const [currentOver, setCurrentOver] = useState({ name: 'Pandiya', id: uuid(), score: [] })
-    const [batsmanOne, setBatsmanOne] = useState({ name: 'Imran', id: uuid(), score: [] })
-    const [batsmanTwo, setBatsmanTwo] = useState({ name: 'Tamim', id: uuid(), score: [] })
-    const [striker, setStriker] = useState({ name: '', id: '', score: [] })
-    const [totalScore, setTotalScore] = useState({ run: 0, wicket: 0 })
+    const [currentOver, setCurrentOver] = useState({ name: '', id: '', score: [], ball: 0 })
+    const [batsmanOne, setBatsmanOne] = useState({ name: '', id: '', score: [] })
+    const [batsmanTwo, setBatsmanTwo] = useState({ name: '', id: '', score: [] })
+    const [striker, setStriker] = useState({ name: '', id: '' })
+    const [totalScore, setTotalScore] = useState({ run: 0, wicket: 0 });
+    const [overs, setOvers] = useState({ over: 0, ball: 0 });
+    const [popups, setPopups] = useState({ striker: true, nonStriker: true, bowler: true });
+    const [outBatsman,setOutBatsman] = useState([]);
+    const battingTeam = match[match.battingTeam.ref]
+    const bowlingTeam = match[match.bowlingTeam.ref]
 
 
     const highlightRef = useRef();
 
     const updateBowler = (score) => {
+        const legalDelivary = ['1', '2', '3', '4', 'w', '0']
+        if (legalDelivary.includes(score.run)) {
+            return setCurrentOver({ ...currentOver, score: [...currentOver.score, score], ball: currentOver.ball + 1 })
+        }
         setCurrentOver({ ...currentOver, score: [...currentOver.score, score] })
     }
 
+    useEffect(() => {
+        if (currentOver.ball >= 6) {
+            exchangeBatsman();
+            setPopups({ ...popups, bowler: true })
+            return setOvers({ over: overs.over + 1, ball: 0 })
+        }
+        setOvers({ ...overs, ball: currentOver.ball })
+    }, [currentOver])
+
+
+
 
     const updateHighlight = (score) => {
-        if(!isNaN(score.run)){
-            setTotalScore({...totalScore,run: totalScore.run+Number(score.run)})
+        if(score.run === 'w'){
+            setTotalScore({...totalScore,wicket: totalScore.wicket+1 })
+        }
+        if (!isNaN(score.run)) {
+            setTotalScore({ ...totalScore, run: totalScore.run + Number(score.run) })
         }
         setHighlight([...highlight, score]);
     }
@@ -164,8 +188,9 @@ function LiveMatch() {
     const updateScore = (score, extra = false) => {
         const newScore = { run: score, id: uuid() }
         updateHighlight(newScore, extra);
-        updateBowler(newScore, extra);
         updateBatsman(newScore, extra);
+        if(score === 'w')return setPopups({...popups,striker: true})
+        updateBowler(newScore, extra);
     }
 
     const exchangeBatsman = () => {
@@ -178,15 +203,55 @@ function LiveMatch() {
 
     const add = (accu, a) => {
 
-        if (isNaN(a.run)) return 0;
-        console.log(a)
-
-        return accu + Number(a.run);
+        return accu + getScore(a);
     }
 
-    useEffect(() => {
-        setStriker(batsmanOne)
-    }, [])
+    const getScore = ({ run }) => {
+        if (!isNaN(run)) return Number(run);
+        if (run === 'wd') return 1;
+        return 0;
+    }
+
+    
+    const batsmanOnePopup = (player) => {
+        if(striker.name !== null && striker.id === batsmanOne.id){
+            const newScore = { run: 'w', id: uuid() }
+            updateBowler(newScore);
+            setBatsmanOne({ ...player, score: [] })
+
+        }else if( striker.id === batsmanTwo.id){
+            const newScore = { run: 'w', id: uuid() }
+            updateBowler(newScore);
+            setBatsmanTwo({ ...player, score: [] })
+        }else{
+            setBatsmanOne({ ...player, score: [] })
+        }
+        setStriker(player);
+        setOutBatsman([...outBatsman,player.id]);
+        setPopups({ ...popups, striker: false })
+    }
+    const batsmanTwoPopup = (player) => {
+        setOutBatsman([...outBatsman,player.id]);
+        setBatsmanTwo({ ...player, score: [] })
+        setPopups({ ...popups, nonStriker: false })
+    }
+    const bowlerPopup = (player) => {
+        setCurrentOver({ ...player, score: [], ball: 0 })
+        setPopups({ ...popups, bowler: false })
+    }
+    // const strikerPopup = () => {
+    //     if (striker.id === batsmanOne.id) {
+    //         setBatsmanOne({ ...player, score: [] })
+    //         setStriker(player);
+    //         setPopups({ ...popups, striker: false })
+    //     }else if(striker.id === batsmanTwo.id){
+    //         setBatsmanOne({ ...player, score: [] })
+    //         setStriker(player);
+    //         setPopups({ ...popups, striker: false })
+    //     }
+    // }
+    // console.log(match,'------------------------------------')
+    // return null;
 
 
     return (
@@ -196,13 +261,13 @@ function LiveMatch() {
                 <View style={{ ...styles.row, paddingTop: 0 }}>
                     <View>
                         <Text style={styles.teamLabel}>Batting Team</Text>
-                        <Text style={[styles.teamName, styles.textContainer]}>Bangladesh</Text>
+                        <Text style={[styles.teamName, styles.textContainer]}>{battingTeam.name}</Text>
                         <Text style={[styles.score, styles.textContainer]}>{totalScore.run}/{totalScore.wicket}</Text>
                     </View>
                     <View>
                         <Text style={styles.teamLabel}>Bowling Team</Text>
-                        <Text style={[styles.teamName, styles.textContainer]}>England</Text>
-                        <Text style={[styles.score, styles.textContainer]}>6 Overs</Text>
+                        <Text style={[styles.teamName, styles.textContainer]}>{bowlingTeam.name}</Text>
+                        <Text style={[styles.score, styles.textContainer]}>{overs.over}.{overs.ball} Overs</Text>
                     </View>
                 </View>
                 <Divider style={styles.divider} />
@@ -218,6 +283,7 @@ function LiveMatch() {
                         <View style={{ ...styles.row, padding: 0 }}>
                             <Text style={styles.name}>{batsmanOne.name}</Text>
                             <Text style={styles.battingScore}>: {batsmanOne.score.reduce(add, 0)}</Text>
+                            {striker.id === batsmanOne.id && <Badge status="error" v containerStyle={{ position: 'absolute', top: 0, right: 18 }} />}
                             {/* <Text>/15</Text> */}
                         </View>
                         <View style={styles.battingHighlightContainer}>
@@ -231,9 +297,10 @@ function LiveMatch() {
                         </View>
                     </View>
                     <View style={{ ...styles.row, paddingTop: 0 }}>
-                        <View style={{ ...styles.row, padding: 0 }}>
+                        <View style={{ ...styles.row, padding: 0, position: 'relative' }}>
                             <Text style={styles.name}>{batsmanTwo.name}</Text>
                             <Text style={styles.battingScore}>: {batsmanTwo.score.reduce(add, 0)}</Text>
+                            {striker.id === batsmanTwo.id && <Badge status="error" v containerStyle={{ position: 'absolute', top: 0, right: 18 }} />}
                             {/* <Text>/15</Text> */}
                         </View>
                         <View style={styles.battingHighlightContainer}>
@@ -263,7 +330,6 @@ function LiveMatch() {
                             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                                 {currentOver.score.map(value =>
                                     <React.Fragment key={value.id}>
-                                        {console.log(value.id)}
                                         <Text style={[styles[value.run], styles.smallFont]}>{value.run}</Text><Text> + </Text>
                                     </React.Fragment>
                                 )}
@@ -282,9 +348,9 @@ function LiveMatch() {
                             onContentSizeChange={() => highlightRef.current.scrollToEnd({ animated: true })}
                         >
                             {highlight.map((value =>
-                                <>
-                                    <Text key={value.id} style={[styles[value.run], styles.largeFont]}>{value.run}</Text><Text style={styles.largeFont}> + </Text>
-                                </>
+                                <React.Fragment key={value.id}>
+                                    <Text style={[styles[value.run], styles.largeFont]}>{value.run}</Text><Text style={styles.largeFont}> + </Text>
+                                </React.Fragment>
                             ))}
                         </ScrollView>
                     </View>
@@ -321,6 +387,9 @@ function LiveMatch() {
                     </View>
                 </View>
             </View>
+            <Popup id={[currentOver.id]} title="Select bowler" visible={popups.bowler} handler={bowlerPopup} players={bowlingTeam.players} />
+            <Popup id={[striker.id]} title="Select non striker" visible={popups.nonStriker} handler={batsmanTwoPopup} players={battingTeam.players} />
+            <Popup id={outBatsman} title="Select a Striker" visible={popups.striker} handler={batsmanOnePopup} players={battingTeam.players} />
         </View>
     )
 }

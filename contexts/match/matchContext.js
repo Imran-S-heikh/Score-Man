@@ -18,8 +18,8 @@ const team =  {
 const initialState = {
     teamOne: team,
     teamTwo: team,
-    battingTeam: '',
-    bowlingTeam: ''
+    battingTeam: {name: 'Team One',ref: 'teamOne'},
+    bowlingTeam: {name: 'Team Two',ref: 'teamTwo'}
 }
 
 export const MatchContext = createContext();
@@ -32,7 +32,6 @@ export default function MatchContextProvider(props) {
         async function getCurrentMatch() {
             const liveMatch = await AsyncStorage.getItem('@liveMatch');
             if(liveMatch){
-                console.log(liveMatch,'livematch---------------')
                 dispatch({type: CREATE_MATCH,value: JSON.parse(liveMatch)})
             }
         }
