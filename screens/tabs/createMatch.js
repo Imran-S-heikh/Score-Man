@@ -245,8 +245,4 @@ function CreateMatch() {
     )
 }
 
-export default () => <PlayerContextProvider>
-    <MatchContextProvider>
-        <CreateMatch />
-    </MatchContextProvider>
-</PlayerContextProvider>
+export default CreateMatch;

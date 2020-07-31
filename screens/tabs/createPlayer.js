@@ -30,6 +30,4 @@ function CreatePlayer() {
     )
 }
 
-export default ()=> <PlayerContextProvider>
-    <CreatePlayer/>
-</PlayerContextProvider>
+export default CreatePlayer

@@ -20,6 +20,7 @@ import CreateMatch from './screens/tabs/createMatch';
 import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import Toss from './components/Toss';
 import LiveMatch from './screens/drawer/liveMatch';
+import MatchContextProvider from './contexts/match/matchContext';
 
 
 const Stack = createStackNavigator();
@@ -27,14 +28,10 @@ const Drawer = createDrawerNavigator();
 
 function Body() {
 
-  const PlayersWraper = () => <PlayerContextProvider>
-    <Players />
-  </PlayerContextProvider>
-
   return (
     <Drawer.Navigator>
       <Drawer.Screen name="Home" component={Home} />
-      <Drawer.Screen name="Players" component={PlayersWraper} />
+      <Drawer.Screen name="Players" component={Players} />
       <Drawer.Screen name="Live Match" component={LiveMatch} />
       <Drawer.Screen name="Do a Toss" component={Toss} />
     </Drawer.Navigator>
@@ -60,7 +57,11 @@ const App: () => React$Node = () => {
 };
 
 const AppWraper = () => <AppContextProvider>
-  <App />
+  <MatchContextProvider>
+    <PlayerContextProvider>
+      <App />
+    </PlayerContextProvider>
+  </MatchContextProvider>
 </AppContextProvider>
 
 export default AppWraper;

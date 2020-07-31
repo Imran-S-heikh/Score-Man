@@ -395,6 +395,4 @@ function LiveMatch() {
 }
 
 
-export default () => <MatchContextProvider>
-    <LiveMatch />
-</MatchContextProvider>
+export default LiveMatch;
