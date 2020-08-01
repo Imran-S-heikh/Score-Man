@@ -72,9 +72,8 @@ function LiveMatch() {
 
 
     const updateHighlight = (score) => {
-        console.log(totalScore)
+        setHighlight([...highlight, score]);
         if (score.run === 'w') {
-            setHighlight([...highlight, score]);
             return setTotalScore({ ...totalScore, wicket: totalScore.wicket + 1 })
         }
         setTotalScore({ ...totalScore, run: totalScore.run + getScore(score) })
