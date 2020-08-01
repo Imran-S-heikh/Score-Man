@@ -7,6 +7,7 @@ import { uuid } from '../../utils';
 import Popup from '../../components/Popup';
 import ExtraScore from '../../components/extraScore';
 import CustomScore from '../../components/customScore';
+import { NEXT_INNINGS } from '../../contexts/match/matchTypes';
 
 const styles = StyleSheet.create({
     teamName: {
@@ -201,7 +202,7 @@ function LiveMatch() {
         updateHighlight(newScore, extra);
         updateBatsman(newScore, extra);
         if(score === 'w'){
-            if(battingTeam.players.length === outBatsman.length)return resetAll()
+            if(battingTeam.players.length === outBatsman.length)return nextInnings()
             return setPopups({...popups,striker: true})
         }
         updateBowler(newScore, extra);
@@ -265,6 +266,11 @@ function LiveMatch() {
         setPopups(popupsInitialState);
         setHighlight([]);
         setOutBatsman([]);
+    }
+
+    const nextInnings = ()=>{
+        dispatch({type: NEXT_INNINGS})
+        resetAll();
     }
 
     return (
