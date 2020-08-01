@@ -5,6 +5,8 @@ import { Divider, Button, Badge, Overlay } from 'react-native-elements';
 import { ScrollView } from 'react-native-gesture-handler';
 import { uuid } from '../../utils';
 import Popup from '../../components/Popup';
+import ExtraScore from '../../components/extraScore';
+import CustomScore from '../../components/customScore';
 
 const styles = StyleSheet.create({
     teamName: {
@@ -81,10 +83,13 @@ const styles = StyleSheet.create({
         color: '#000'
     },
     'wd': {
-        color: 'red'
+        color: '#9e7915'
     },
     'w': {
-        color: 'red'
+        color: 'orangered'
+    },
+    'nb': {
+        color: '#52159e'
     },
     smallFont: {
         fontSize: 16
@@ -120,23 +125,31 @@ const styles = StyleSheet.create({
 
 });
 
+const batsmanInitalState = { name: '', id: '', score: [] }
+const currentOverInitialState = { name: '', id: '', score: [], ball: 0 }
+const totalScoreInitialScore = { run: 0, wicket: 0 }
+const popupsInitialState = { striker: true, nonStriker: true, bowler: true }
+const oversInitialState = { over: 0, ball: 0 }
+
 
 function LiveMatch() {
 
 
     const { match, dispatch } = useContext(MatchContext);
     const [highlight, setHighlight] = useState([]);
-    const [currentOver, setCurrentOver] = useState({ name: '', id: '', score: [], ball: 0 })
-    const [batsmanOne, setBatsmanOne] = useState({ name: '', id: '', score: [] })
-    const [batsmanTwo, setBatsmanTwo] = useState({ name: '', id: '', score: [] })
-    const [striker, setStriker] = useState({ name: '', id: '' })
-    const [totalScore, setTotalScore] = useState({ run: 0, wicket: 0 });
-    const [overs, setOvers] = useState({ over: 0, ball: 0 });
-    const [popups, setPopups] = useState({ striker: true, nonStriker: true, bowler: true });
+    const [currentOver, setCurrentOver] = useState(currentOverInitialState)
+    const [batsmanOne, setBatsmanOne] = useState(batsmanInitalState)
+    const [batsmanTwo, setBatsmanTwo] = useState(batsmanInitalState)
+    const [striker, setStriker] = useState(batsmanInitalState)
+    const [totalScore, setTotalScore] = useState(totalScoreInitialScore);
+    const [overs, setOvers] = useState(oversInitialState);
+    const [popups, setPopups] = useState(popupsInitialState);
     const [outBatsman,setOutBatsman] = useState([]);
     const battingTeam = match[match.battingTeam.ref]
     const bowlingTeam = match[match.bowlingTeam.ref]
-
+    const [customOpen,setCustomOpen] = useState(false);
+    const [extraOpen,setExtraOpen] = useState(false);
+ 
 
     const highlightRef = useRef();
 
@@ -164,9 +177,7 @@ function LiveMatch() {
         if(score.run === 'w'){
             setTotalScore({...totalScore,wicket: totalScore.wicket+1 })
         }
-        if (!isNaN(score.run)) {
-            setTotalScore({ ...totalScore, run: totalScore.run + Number(score.run) })
-        }
+        setTotalScore({ ...totalScore, run: totalScore.run + getScore(score) })
         setHighlight([...highlight, score]);
     }
 
@@ -189,7 +200,10 @@ function LiveMatch() {
         const newScore = { run: score, id: uuid() }
         updateHighlight(newScore, extra);
         updateBatsman(newScore, extra);
-        if(score === 'w')return setPopups({...popups,striker: true})
+        if(score === 'w'){
+            if(battingTeam.players.length === outBatsman.length)return resetAll()
+            return setPopups({...popups,striker: true})
+        }
         updateBowler(newScore, extra);
     }
 
@@ -209,6 +223,7 @@ function LiveMatch() {
     const getScore = ({ run }) => {
         if (!isNaN(run)) return Number(run);
         if (run === 'wd') return 1;
+        if (run === 'nb') return 1;
         return 0;
     }
 
@@ -239,20 +254,18 @@ function LiveMatch() {
         setCurrentOver({ ...player, score: [], ball: 0 })
         setPopups({ ...popups, bowler: false })
     }
-    // const strikerPopup = () => {
-    //     if (striker.id === batsmanOne.id) {
-    //         setBatsmanOne({ ...player, score: [] })
-    //         setStriker(player);
-    //         setPopups({ ...popups, striker: false })
-    //     }else if(striker.id === batsmanTwo.id){
-    //         setBatsmanOne({ ...player, score: [] })
-    //         setStriker(player);
-    //         setPopups({ ...popups, striker: false })
-    //     }
-    // }
-    // console.log(match,'------------------------------------')
-    // return null;
 
+    const resetAll = ()=>{
+        setBatsmanOne(batsmanInitalState);
+        setBatsmanTwo(batsmanInitalState);
+        setStriker(batsmanInitalState);
+        setOvers(oversInitialState);
+        setTotalScore(totalScoreInitialScore);
+        setCurrentOver(currentOverInitialState);
+        setPopups(popupsInitialState);
+        setHighlight([]);
+        setOutBatsman([]);
+    }
 
     return (
 
@@ -360,24 +373,26 @@ function LiveMatch() {
             <View style={styles.buttonsContainer}>
                 <View style={{ ...styles.buttonRow, marginBottom: 6 }}>
                     <View style={{ flexGrow: 1 }}>
-                        <Button titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, backgroundColor: '#fff' }} type="outline" title="Cust." />
+                        <Button onPress={()=>setCustomOpen(!customOpen)} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, backgroundColor: '#fff' }} type="outline" title="Cust." />
+                        <CustomScore handler={updateScore} isOpen={customOpen}/>
                     </View>
                     <View style={{ flexGrow: 1 }}>
-                        <Button onPress={() => updateScore('wd')} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, backgroundColor: '#A4A574' }} title="WD" />
+                        <Button onPress={() => updateScore('wd',true)} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, backgroundColor: '#A4A574' }} title="WD" />
                     </View>
                     <View style={{ flexGrow: 1 }}>
                         <Button onPress={() => updateScore('2')} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, backgroundColor: '#909090' }} title="2" />
                     </View>
                     <View style={{ flexGrow: 1 }}>
-                        <Button onPress={() => updateScore('4')} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, backgroundColor: '#5CBC9F' }} title="4" />
+                        <Button onPress={() => updateScore('w')} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, backgroundColor: '#FF9595' }} title="W" />
                     </View>
-                    <View style={{ flexGrow: 1 }}>
-                        <Button titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, marginRight: 0, backgroundColor: '#fff' }} type="outline" title="Extra" />
+                    <View style={{ flexGrow: 1,position: 'relative' }}>
+                        <Button onPress={()=>setExtraOpen(!extraOpen)} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, marginRight: 0, backgroundColor: '#fff' }} type="outline" title="Extra" />
+                        <ExtraScore isOpen={extraOpen} handler={updateScore}/>
                     </View>
                 </View>
                 <View style={styles.buttonRow}>
                     <View style={{ flexGrow: 1 }}>
-                        <Button onPress={() => updateScore('w')} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, backgroundColor: '#FF9595' }} title="W" />
+                        <Button onPress={() => updateScore('4')} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, backgroundColor: '#5CBC9F' }} title="4" />
                     </View>
                     <View style={{ flexGrow: 1 }}>
                         <Button onPress={() => updateScore('1')} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, backgroundColor: '#B0B0B0' }} title="1" />
