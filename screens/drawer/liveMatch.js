@@ -16,7 +16,7 @@ import InfoPopup from '../../components/InfoPopup';
 const batsmanInitalState = { name: '', id: '', score: [] }
 const currentOverInitialState = { name: '', id: '', score: [], ball: 0 }
 const totalScoreInitialScore = { run: 0, wicket: 0 }
-const popupsInitialState = { striker: true, nonStriker: true, bowler: true, winPopup: false }
+const popupsInitialState = { striker: true, nonStriker: true, bowler: true, winPopup: false, inningsEnd: false }
 const oversInitialState = { over: 0, ball: 0 }
 const firstInnings = { name: 'First Innings', key: 'FIRST_INNINGS' }
 const secondInnings = { name: 'Second Innings', key: 'SECOND_INNINGS' }
@@ -41,7 +41,7 @@ function LiveMatch() {
     const [extraOpen, setExtraOpen] = useState(false);
     const [innings, setInnings] = useState(firstInnings);
     const [target, setTarget] = useState('');
-    const [winTeamName,setWinTeamName] = useState('');
+    const [winTeamName, setWinTeamName] = useState('');
 
 
 
@@ -56,9 +56,9 @@ function LiveMatch() {
     }
 
     useEffect(() => {
-        if(totalScore.run >= target && innings.key === secondInnings.key){
+        if (totalScore.run >= target && innings.key === secondInnings.key) {
             setWinTeamName(battingTeam.name)
-            setPopups({...popups,winPopup: true})
+            setPopups({ ...popups, winPopup: true })
         }
         if (currentOver.ball >= 6) {
             exchangeBatsman();
@@ -99,7 +99,7 @@ function LiveMatch() {
         updateHighlight(newScore, extra);
         updateBatsman(newScore, extra);
         if (score === 'w') {
-            if (battingTeam.players.length === outBatsman.length) return nextInnings()
+            if (battingTeam.players.length === outBatsman.length) return setPopups({...popups,inningsEnd: true})
             return setPopups({ ...popups, striker: true })
         }
         updateBowler(newScore, extra);
@@ -173,6 +173,12 @@ function LiveMatch() {
             setInnings(secondInnings);
             setTarget(totalScore.run + 1)
         }
+    }
+
+    const playAgain = () => {
+        resetAll();
+        setTarget('');
+        setInnings(firstInnings);
     }
 
     return (
@@ -346,7 +352,7 @@ function LiveMatch() {
             <Popup id={[striker.id]} title="Select non striker" visible={popups.nonStriker} handler={batsmanTwoPopup} players={battingTeam.players} />
             <Popup id={outBatsman} title="Select a Striker" visible={popups.striker} handler={batsmanOnePopup} players={battingTeam.players} />
             <InfoPopup visible={popups.winPopup} title={winTeamName} description="Won the Game">
-                <View style={{ marginTop: 30,display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                <View style={{ marginTop: 30, display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
                     <TouchableOpacity style={{
                         backgroundColor: 'lightgray',
                         padding: 10,
@@ -360,10 +366,15 @@ function LiveMatch() {
                         backgroundColor: 'lightgray',
                         padding: 10,
                         borderRadius: 5,
-                    }} onPress={() => { }}>
-                        <Icon name="caretright" type="antdesign" />
-                        <Text> Next Match </Text>
+                    }} onPress={() => playAgain()}>
+                        <Icon name="reload1" type="antdesign" />
+                        <Text> Play Again </Text>
                     </TouchableOpacity>
+                </View>
+            </InfoPopup>
+            <InfoPopup visible={popups.inningsEnd} title="First Innings End" crown={false} description={`Target: ${totalScore.run+1}`}>
+                <View style={{marginTop: 20}}>
+                    <Button onPress={()=>nextInnings()} title="Next Innings" />
                 </View>
             </InfoPopup>
         </View>
