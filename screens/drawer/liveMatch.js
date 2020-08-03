@@ -49,7 +49,7 @@ function LiveMatch() {
 
     const updateBowler = (score) => {
         const legalDelivary = ['1', '2', '3', '4', 'w', '0']
-        if (legalDelivary.includes(score.run)) {
+        if (isLegal(score.run)) {
             return setCurrentOver({ ...currentOver, score: [...currentOver.score, score], ball: currentOver.ball + 1 })
         }
         setCurrentOver({ ...currentOver, score: [...currentOver.score, score] })
@@ -80,11 +80,15 @@ function LiveMatch() {
         
     },[overs])
 
+    const isLegal = (delivary)=>{
+        const legalDelivary = ['1', '2', '3', '4', 'w', '0'];
 
+        return legalDelivary.includes(delivary);
+    }
 
 
     const updateHighlight = (score) => {
-        setHighlight([...highlight, score]);
+        setHighlight([...highlight, {...score,endOver: isLegal(score.run) && overs.ball === 5}]);
         if (score.run === 'w') {
             return setTotalScore({ ...totalScore, wicket: totalScore.wicket + 1 })
         }
@@ -311,7 +315,11 @@ function LiveMatch() {
                         >
                             {highlight.map((value =>
                                 <React.Fragment key={value.id}>
-                                    <Text style={[styles[value.run], styles.largeFont]}>{value.run}</Text><Text style={styles.largeFont}> + </Text>
+                                    <Text style={[styles[value.run], styles.largeFont]}>{value.run}</Text>
+                                    {value.endOver ? 
+                                        <Text style={{...styles.largeFont,color: '#6a00ff'}}>  |  </Text>:
+                                        <Text style={styles.largeFont}> + </Text>
+                                    }
                                 </React.Fragment>
                             ))}
                         </ScrollView>
