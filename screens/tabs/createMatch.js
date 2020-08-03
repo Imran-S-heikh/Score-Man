@@ -49,7 +49,8 @@ function CreateMatch() {
     const [bowlingTeam, setBowlingTeam] = useState(null);
     const [inputDisabled, setInputDisabled] = useState(false);
     const { players } = useContext(PlayerContext);
-    const {match,dispatch} = useContext(MatchContext);
+    const { match, dispatch } = useContext(MatchContext);
+    const [overToPlay,setOverToPlay] = useState('6');
 
 
 
@@ -76,9 +77,10 @@ function CreateMatch() {
                 bowling: []
             },
             battingTeam,
-            bowlingTeam
+            bowlingTeam,
+            overToPlay,
         }
-        dispatch({type: CREATE_MATCH,value: newMatch})
+        dispatch({ type: CREATE_MATCH, value: newMatch })
     }
 
 
@@ -120,12 +122,20 @@ function CreateMatch() {
         setBattingTeamOverlay(false)
         setInputDisabled(true)
         if (teamName === teamOneName) {
-            setBattingTeam({name: teamOneName,ref: 'teamOne'});
-            setBowlingTeam({name: teamTwoName,ref: 'teamTwo'});
+            setBattingTeam({ name: teamOneName, ref: 'teamOne' });
+            setBowlingTeam({ name: teamTwoName, ref: 'teamTwo' });
         } else if (teamName === teamTwoName) {
-            setBattingTeam({name: teamTwoName,ref: 'teamTwo'});
-            setBowlingTeam({name: teamOneName,ref: 'teamOne'});
+            setBattingTeam({ name: teamTwoName, ref: 'teamTwo' });
+            setBowlingTeam({ name: teamOneName, ref: 'teamOne' });
         }
+    }
+
+    const handleOverInput = (num) => {
+        console.log(!isNaN(num))
+        if(isNaN(num))return null;
+        if(Number(num) > 50) return null;
+
+        setOverToPlay(num)
     }
 
 
@@ -236,6 +246,18 @@ function CreateMatch() {
                             </View>
                         </View>
                     </Overlay>
+
+                    {/* ******************* */}
+                    {/* Select Over Section */}
+                    {/* ******************* */}
+                    <View style={{display: 'flex',flexDirection: 'row'}}>
+                        {/* <View style={{flexGrow: 1}}>
+                            <Text style={{...styles.title,textAlign: 'left'}}>Overs:</Text>
+                        </View> */}
+                        <View style={{flexGrow: 1}}>
+                            <Input onChangeText={handleOverInput} value={overToPlay} placeholder="give over like 5 or 6" label="Overs To Play" />
+                        </View>
+                    </View>
                 </ScrollView>
             </View>
             <View style={{ height: '10%' }}>

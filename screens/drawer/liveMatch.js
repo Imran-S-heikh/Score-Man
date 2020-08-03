@@ -68,6 +68,18 @@ function LiveMatch() {
         setOvers({ ...overs, ball: currentOver.ball })
     }, [currentOver])
 
+    useEffect(()=>{
+        if(innings.key === secondInnings.key && overs.over >= match.overToPlay && totalScore.run < target){
+            setWinTeamName(bowlingTeam.name)
+            setPopups({ ...popups, winPopup: true })
+        }
+
+        if(innings.key === firstInnings.key && overs.over >= match.overToPlay){
+            nextInnings();
+        }
+        
+    },[overs])
+
 
 
 
