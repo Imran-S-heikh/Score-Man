@@ -9,6 +9,8 @@ import ExtraScore from '../../components/extraScore';
 import CustomScore from '../../components/customScore';
 import { NEXT_INNINGS } from '../../contexts/match/matchTypes';
 import InfoPopup from '../../components/InfoPopup';
+import { PlayerContext } from '../../contexts/palyers/playerContext';
+import { UPDATE_PLAYER_RUN } from '../../contexts/palyers/playerTypes';
 
 
 
@@ -26,6 +28,7 @@ function LiveMatch() {
 
 
     const { match, dispatch } = useContext(MatchContext);
+    const playerState = useContext(PlayerContext);
     const [highlight, setHighlight] = useState([]);
     const [currentOver, setCurrentOver] = useState(currentOverInitialState)
     const [batsmanOne, setBatsmanOne] = useState(batsmanInitalState)
@@ -48,7 +51,6 @@ function LiveMatch() {
     const highlightRef = useRef();
 
     const updateBowler = (score) => {
-        const legalDelivary = ['1', '2', '3', '4', 'w', '0']
         if (isLegal(score.run)) {
             return setCurrentOver({ ...currentOver, score: [...currentOver.score, score], ball: currentOver.ball + 1 })
         }
@@ -68,19 +70,19 @@ function LiveMatch() {
         setOvers({ ...overs, ball: currentOver.ball })
     }, [currentOver])
 
-    useEffect(()=>{
-        if(innings.key === secondInnings.key && overs.over >= match.overToPlay && totalScore.run < target){
+    useEffect(() => {
+        if (innings.key === secondInnings.key && overs.over >= match.overToPlay && totalScore.run < target) {
             setWinTeamName(bowlingTeam.name)
-            setPopups({ ...popups, winPopup: true })
+            setPopups({ striker: false, nonStriker: false, inningsEnd: false, bowler: false, winPopup: true })
         }
 
-        if(innings.key === firstInnings.key && overs.over >= match.overToPlay){
-            nextInnings();
+        if (innings.key === firstInnings.key && overs.over >= match.overToPlay) {
+            setPopups({ striker: false, nonStriker: false, winPopup: false, bowler: false, inningsEnd: true })
         }
-        
-    },[overs])
 
-    const isLegal = (delivary)=>{
+    }, [overs])
+
+    const isLegal = (delivary) => {
         const legalDelivary = ['1', '2', '3', '4', 'w', '0'];
 
         return legalDelivary.includes(delivary);
@@ -88,7 +90,7 @@ function LiveMatch() {
 
 
     const updateHighlight = (score) => {
-        setHighlight([...highlight, {...score,endOver: isLegal(score.run) && overs.ball === 5}]);
+        setHighlight([...highlight, { ...score, endOver: isLegal(score.run) && overs.ball === 5 }]);
         if (score.run === 'w') {
             return setTotalScore({ ...totalScore, wicket: totalScore.wicket + 1 })
         }
@@ -115,7 +117,18 @@ function LiveMatch() {
         updateHighlight(newScore, extra);
         updateBatsman(newScore, extra);
         if (score === 'w') {
-            if (battingTeam.players.length === outBatsman.length) return setPopups({...popups,inningsEnd: true})
+            playerState.dispatch({ type: UPDATE_PLAYER_RUN, id: striker.id, value: getStriker().score })
+            if (battingTeam.players.length === outBatsman.length) {
+                if (innings.key === firstInnings.key) {
+
+                    return setPopups({ ...popups, inningsEnd: true })
+                } else if (innings.key === secondInnings.key && totalScore.run < target) {
+                    setWinTeamName(bowlingTeam.name)
+                    nextInnings()
+                    return setPopups({ striker: false, nonStriker: false, inningsEnd: false, bowler: false, winPopup: true })
+
+                }
+            }
             return setPopups({ ...popups, striker: true })
         }
         updateBowler(newScore, extra);
@@ -191,10 +204,22 @@ function LiveMatch() {
         }
     }
 
+    useEffect(() => {
+        // console.log(getStriker().score,'Current Batsman');
+    })
+
     const playAgain = () => {
         resetAll();
         setTarget('');
         setInnings(firstInnings);
+    }
+
+    const getStriker = () => {
+        if (striker.id === batsmanOne.id) {
+            return batsmanOne
+        } else if (striker.id === batsmanTwo.id) {
+            return batsmanTwo
+        }
     }
 
     return (
@@ -316,8 +341,8 @@ function LiveMatch() {
                             {highlight.map((value =>
                                 <React.Fragment key={value.id}>
                                     <Text style={[styles[value.run], styles.largeFont]}>{value.run}</Text>
-                                    {value.endOver ? 
-                                        <Text style={{...styles.largeFont,color: '#6a00ff'}}>  |  </Text>:
+                                    {value.endOver ?
+                                        <Text style={{ ...styles.largeFont, color: '#6a00ff' }}>  |  </Text> :
                                         <Text style={styles.largeFont}> + </Text>
                                     }
                                 </React.Fragment>
@@ -392,9 +417,9 @@ function LiveMatch() {
                     </TouchableOpacity>
                 </View>
             </InfoPopup>
-            <InfoPopup visible={popups.inningsEnd} title="First Innings End" crown={false} description={`Target: ${totalScore.run+1}`}>
-                <View style={{marginTop: 20}}>
-                    <Button onPress={()=>nextInnings()} title="Next Innings" />
+            <InfoPopup visible={popups.inningsEnd} title="First Innings End" crown={false} description={`Target: ${totalScore.run + 1}`}>
+                <View style={{ marginTop: 20 }}>
+                    <Button onPress={() => nextInnings()} title="Next Innings" />
                 </View>
             </InfoPopup>
         </View>

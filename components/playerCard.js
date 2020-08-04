@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     }
 })
 
-export default function PlayerCard({player}) {
+export default function PlayerCard({ player }) {
     return (
         <Card title={player.name}>
             <View>
@@ -29,7 +29,7 @@ export default function PlayerCard({player}) {
                     </View>
                     <View style={styles.item}>
                         <Text style={styles.label}>Runs: </Text>
-                        <Text>344</Text>
+                        <Text>{player.batting.reduce((accu,val)=>accu+val.total,0)}</Text>
                     </View>
                 </View>
                 <View style={styles.itemContainer}>
