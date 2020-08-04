@@ -39,7 +39,7 @@ export default function PlayerCard({ player }) {
                     </View>
                     <View style={styles.item}>
                         <Text style={styles.label}>Wickets: </Text>
-                        <Text>30</Text>
+                        <Text>{player.bowling.reduce((accu,val)=>accu+val.wicket,0)}</Text>
                     </View>
                 </View>
             </View>

@@ -10,7 +10,7 @@ import CustomScore from '../../components/customScore';
 import { NEXT_INNINGS } from '../../contexts/match/matchTypes';
 import InfoPopup from '../../components/InfoPopup';
 import { PlayerContext } from '../../contexts/palyers/playerContext';
-import { UPDATE_PLAYER_RUN } from '../../contexts/palyers/playerTypes';
+import { UPDATE_PLAYER_RUN, UPDATE_PLAYER_OVER } from '../../contexts/palyers/playerTypes';
 
 
 
@@ -180,6 +180,9 @@ function LiveMatch() {
     const bowlerPopup = (player) => {
         setCurrentOver({ ...player, score: [], ball: 0 })
         setPopups({ ...popups, bowler: false })
+        if (currentOver.ball >= 6) {
+            playerState.dispatch({ type: UPDATE_PLAYER_OVER, id: currentOver.id, value: currentOver.score })
+        }
     }
 
     const resetAll = () => {
