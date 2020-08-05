@@ -60,6 +60,7 @@ function LiveMatch() {
     useEffect(() => {
         if (totalScore.run >= target && innings.key === secondInnings.key) {
             setWinTeamName(battingTeam.name)
+            updatePlayers();
             setPopups({ ...popups, winPopup: true })
         }
         if (currentOver.ball >= 6) {
@@ -73,6 +74,7 @@ function LiveMatch() {
     useEffect(() => {
         if (innings.key === secondInnings.key && overs.over >= match.overToPlay && totalScore.run < target) {
             setWinTeamName(bowlingTeam.name)
+            updatePlayers();
             setPopups({ striker: false, nonStriker: false, inningsEnd: false, bowler: false, winPopup: true })
         }
 
@@ -124,6 +126,7 @@ function LiveMatch() {
                     return setPopups({ ...popups, inningsEnd: true })
                 } else if (innings.key === secondInnings.key && totalScore.run < target) {
                     setWinTeamName(bowlingTeam.name)
+                    updatePlayers();
                     nextInnings()
                     return setPopups({ striker: false, nonStriker: false, inningsEnd: false, bowler: false, winPopup: true })
 
@@ -197,10 +200,17 @@ function LiveMatch() {
         setOutBatsman([]);
     }
 
+    const updatePlayers = ()=>{
+        playerState.dispatch({type: UPDATE_PLAYER_RUN,id: batsmanOne.id,value: batsmanOne.score})
+        playerState.dispatch({type: UPDATE_PLAYER_RUN,id: batsmanTwo.id,value: batsmanTwo.score})
+        playerState.dispatch({type: UPDATE_PLAYER_OVER,id: currentOver.id,value: currentOver.score})
+    }
+
     const nextInnings = () => {
         dispatch({ type: NEXT_INNINGS })
         resetAll();
-
+        updatePlayers();
+        
         if (innings.key === firstInnings.key) {
             setInnings(secondInnings);
             setTarget(totalScore.run + 1)
