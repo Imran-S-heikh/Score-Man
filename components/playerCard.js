@@ -25,7 +25,7 @@ export default function PlayerCard({ player }) {
                 <View style={styles.itemContainer}>
                     <View style={styles.item}>
                         <Text style={styles.label}>Highest Score: </Text>
-                        <Text>80</Text>
+                        <Text>--</Text>
                     </View>
                     <View style={styles.item}>
                         <Text style={styles.label}>Runs: </Text>
@@ -35,7 +35,7 @@ export default function PlayerCard({ player }) {
                 <View style={styles.itemContainer}>
                     <View style={styles.item}>
                         <Text style={styles.label}>Best Bowling: </Text>
-                        <Text>7/30</Text>
+                        <Text>--</Text>
                     </View>
                     <View style={styles.item}>
                         <Text style={styles.label}>Wickets: </Text>

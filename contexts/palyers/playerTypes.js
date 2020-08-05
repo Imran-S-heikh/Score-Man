@@ -3,3 +3,4 @@ export const SET_PLAYERS   = 'SET_PLAYERS';
 export const GET_PLAYER    = 'GET_PLAYER';
 export const UPDATE_PLAYER_RUN = 'UPDATE_PLAYER_RUN';
 export const UPDATE_PLAYER_OVER = 'UPDATE_PLAYER_OVER';
+export const UPDATE_HIGHEST_RUN = 'UPDATE_HIGHEST_RUN';

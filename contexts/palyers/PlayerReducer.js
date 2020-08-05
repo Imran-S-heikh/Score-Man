@@ -60,4 +60,3 @@ const updateOver = (state, id, value) => {
     AsyncStorage.setItem('@players', JSON.stringify(state));
     return state;
 }
-
