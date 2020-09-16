@@ -10,13 +10,16 @@ import { uuid } from '../../utils';
 function CreatePlayer() {
 
     const [name, setName] = useState('');
-    const {players,dispatch} = useContext(PlayerContext);
+    const { players, dispatch } = useContext(PlayerContext);
 
     const handlePress = () => {
-        const newPlayer = { name, id: uuid() };
-        dispatch({type: CREATE_PLAYER,value: newPlayer})
+        if (name !== '') {
+            const newPlayer = { name, id: uuid() };
+            dispatch({ type: CREATE_PLAYER, value: newPlayer })
+            setName('')
+        }
     }
-   
+
     return (
         <View>
             <Text h2 style={{ textAlign: 'center', marginBottom: 20 }}>Create a Player</Text>

@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -20,7 +20,8 @@ import CreateMatch from './screens/tabs/createMatch';
 import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import Toss from './components/Toss';
 import LiveMatch from './screens/drawer/liveMatch';
-import MatchContextProvider from './contexts/match/matchContext';
+import MatchContextProvider, { MatchContext } from './contexts/match/matchContext';
+import addPlayerToMatch from './screens/tabs/addPlayerToMatch';
 
 
 const Stack = createStackNavigator();
@@ -28,11 +29,14 @@ const Drawer = createDrawerNavigator();
 
 function Body() {
 
+  const { match, dispatch } = useContext(MatchContext);
+
+
   return (
     <Drawer.Navigator>
       <Drawer.Screen name="Home" component={Home} />
       <Drawer.Screen name="Players" component={Players} />
-      <Drawer.Screen name="Live Match" component={LiveMatch} />
+      {match.id && <Drawer.Screen name="Live Match" component={LiveMatch} />}
       <Drawer.Screen name="Do a Toss" component={Toss} />
     </Drawer.Navigator>
   )
@@ -51,6 +55,7 @@ const App: () => React$Node = () => {
         />
         <Stack.Screen name="create-player" component={CreatePlayer} />
         <Stack.Screen name="create-match" component={CreateMatch} />
+        <Stack.Screen name="add-player-to-match" component={addPlayerToMatch} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useRef, useEffect } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import MatchContextProvider, { MatchContext } from '../../contexts/match/matchContext'
-import { Divider, Button, Badge, Overlay, Icon } from 'react-native-elements';
+import { Divider, Button, Badge, Overlay, Icon, ButtonGroup } from 'react-native-elements';
 import { ScrollView } from 'react-native-gesture-handler';
 import { uuid } from '../../utils';
 import Popup from '../../components/Popup';
@@ -45,13 +45,23 @@ function LiveMatch() {
     const [innings, setInnings] = useState(firstInnings);
     const [target, setTarget] = useState('');
     const [winTeamName, setWinTeamName] = useState('');
+    const matchRef = useRef(match.id);
+
+    useEffect(() => {
+        console.log(match.id)
+        if (matchRef.current !== match.id) {
+            playAgain();
+        }
+        matchRef.current = match.id
+    }, [match])
 
 
 
     const highlightRef = useRef();
 
-    const updateBowler = (score) => {
-        if (isLegal(score.run)) {
+    const updateBowler = (score, extra) => {
+        // if(extra) return ;
+        if (isLegal(score.run) && !extra) {
             return setCurrentOver({ ...currentOver, score: [...currentOver.score, score], ball: currentOver.ball + 1 })
         }
         setCurrentOver({ ...currentOver, score: [...currentOver.score, score] })
@@ -200,17 +210,17 @@ function LiveMatch() {
         setOutBatsman([]);
     }
 
-    const updatePlayers = ()=>{
-        playerState.dispatch({type: UPDATE_PLAYER_RUN,id: batsmanOne.id,value: batsmanOne.score})
-        playerState.dispatch({type: UPDATE_PLAYER_RUN,id: batsmanTwo.id,value: batsmanTwo.score})
-        playerState.dispatch({type: UPDATE_PLAYER_OVER,id: currentOver.id,value: currentOver.score})
+    const updatePlayers = () => {
+        playerState.dispatch({ type: UPDATE_PLAYER_RUN, id: batsmanOne.id, value: batsmanOne.score })
+        playerState.dispatch({ type: UPDATE_PLAYER_RUN, id: batsmanTwo.id, value: batsmanTwo.score })
+        playerState.dispatch({ type: UPDATE_PLAYER_OVER, id: currentOver.id, value: currentOver.score })
     }
 
     const nextInnings = () => {
         dispatch({ type: NEXT_INNINGS })
         resetAll();
         updatePlayers();
-        
+
         if (innings.key === firstInnings.key) {
             setInnings(secondInnings);
             setTarget(totalScore.run + 1)
@@ -233,6 +243,21 @@ function LiveMatch() {
         } else if (striker.id === batsmanTwo.id) {
             return batsmanTwo
         }
+    }
+
+    const undo = () => {
+        // Undo Batsman
+        let undoScore;
+        if (striker.id === batsmanOne.id) {
+            undoScore = [...batsmanOne.score].pop()
+            setBatsmanOne({ ...batsmanOne, score: undoScore })
+        } else if (striker.id === batsmanTwo.id) {
+            undoScore = [...batsmanTwo.score].pop()
+            setBatsmanTwo({ ...batsmanTwo, score: undoScore })
+        }
+
+        // Undo Bowler
+
     }
 
     return (
@@ -372,7 +397,7 @@ function LiveMatch() {
             <View style={styles.buttonsContainer}>
                 <View style={{ ...styles.buttonRow, marginBottom: 6 }}>
                     <View style={{ flexGrow: 1 }}>
-                        <Button onPress={() => setCustomOpen(!customOpen)} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, backgroundColor: '#fff' }} type="outline" title="Cust." />
+                        <Button onPress={() => setCustomOpen(!customOpen)} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, backgroundColor: '#fff' }} type="outline" title="Other" />
                         <CustomScore handler={updateScore} isOpen={customOpen} />
                     </View>
                     <View style={{ flexGrow: 1 }}>

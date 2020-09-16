@@ -1,8 +1,9 @@
-import React, { useContext } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { View, Text, StyleSheet, Image } from 'react-native'
 import Toss from '../../components/Toss'
 import { PlayerContext } from '../../contexts/palyers/playerContext'
-import { ListItem } from 'react-native-elements'
+import { ListItem, Avatar } from 'react-native-elements'
+import img from '../../assets/img.jpg'
 
 const styles = StyleSheet.create({
     container: {
@@ -58,12 +59,17 @@ function Home() {
 
 
     const { players } = useContext(PlayerContext);
-    const topBatsman = players.sort((a, b) => getVal(b) - getVal(a))
-    const topThreeBatsman = topBatsman.slice(0, 3);
-    const topBowlers = players.sort((a, b) => getWicket(b) - getWicket(a))
-    const topThreeBowler = topBowlers.slice(0, 3);
+    
+    const [topBatsman,setTopBatsman] = useState([]);
+    const [topBowler,setTopBowler] = useState([]);
+    const inputRef = useRef();
 
-
+    useEffect(()=>{
+        if(players.length !== 0){
+            setTopBatsman(players.sort((a, b) => getVal(b) - getVal(a)))
+            setTopBowler(players.sort((a, b) => getWicket(b) - getWicket(a)))
+        }
+    },[players])
 
 
     return (
@@ -71,7 +77,7 @@ function Home() {
             <View style={styles.contentWraper}>
                 <Text style={styles.header}>Highest Runs</Text>
                 <View >
-                    {topThreeBatsman.map((player, i) =>
+                    {topBatsman.slice(0, 3).map((player, i) =>
                         <ListItem
                             key={player.id}
                             leftElement={<Text style={[styles.leftElement, styles[i + 1]]} >{i + 1}</Text>}
@@ -82,11 +88,12 @@ function Home() {
                         />
                     )}
                 </View>
+                    {/* <Avatar size="large" source={img} /> */}
             </View>
             <View style={styles.contentWraper}>
                 <Text style={styles.header}>Highest Wickets</Text>
                 <View >
-                    {topThreeBowler.map((player, i) =>
+                    {topBowler.slice(0, 3).map((player, i) =>
                         <ListItem
                             key={player.id}
                             leftElement={<Text style={[styles.leftElement, styles[i + 1]]} >{i + 1}</Text>}

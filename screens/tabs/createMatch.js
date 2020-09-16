@@ -6,6 +6,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import MatchContextProvider, { MatchContext } from '../../contexts/match/matchContext';
 import { uuid } from '../../utils';
 import { CREATE_MATCH } from '../../contexts/match/matchTypes';
+import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
     inline: {
@@ -51,6 +52,7 @@ function CreateMatch() {
     const { players } = useContext(PlayerContext);
     const { match, dispatch } = useContext(MatchContext);
     const [overToPlay,setOverToPlay] = useState('6');
+    const navigation = useNavigation();
 
 
 
@@ -81,6 +83,7 @@ function CreateMatch() {
             overToPlay,
         }
         dispatch({ type: CREATE_MATCH, value: newMatch })
+        navigation.navigate('Live Match')
     }
 
 

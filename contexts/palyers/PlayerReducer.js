@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 export default function playerReducer(state, action) {
     switch (action.type) {
         case CREATE_PLAYER:
-            AsyncStorage.setItem('@players', JSON.stringify([...state, action.value]))
+            AsyncStorage.setItem('@players', JSON.stringify([...state,{ ...action.value, batting: [], bowling: [] }]))
             return [...state, { ...action.value, batting: [], bowling: [] }]
 
         case SET_PLAYERS:

@@ -51,6 +51,11 @@ export default function DropDown() {
         dispatch({type: OPTIONS_DROP_DOWN_OPEN,value: !appState.optionsOpen})
     }
 
+    const handleAddPlayer = () => {
+        navigation.navigate('add-player-to-match');
+        dispatch({type: OPTIONS_DROP_DOWN_OPEN,value: !appState.optionsOpen})
+    }
+
     if (!appState.optionsOpen) return null;
 
     const handlePressEvent = (event) =>{
@@ -67,6 +72,9 @@ export default function DropDown() {
             <Divider style={styles.divider} />
             <TouchableOpacity onPress={handlecreateMatch} style={styles.listItem}>
                 <Text>Create Match</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleAddPlayer} style={styles.listItem}>
+                <Text>Ad Player</Text>
             </TouchableOpacity>
         </View>
     )
