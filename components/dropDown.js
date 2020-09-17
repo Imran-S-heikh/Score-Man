@@ -5,6 +5,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import { AppContext } from '../contexts/appContext/appContext'
 import { StackActions, useNavigation, DrawerActions } from '@react-navigation/native'
 import { OPTIONS_DROP_DOWN_OPEN } from '../contexts/appContext/types'
+import { MatchContext } from '../contexts/match/matchContext'
 
 const styles = StyleSheet.create({
     container: {
@@ -39,26 +40,28 @@ const styles = StyleSheet.create({
 export default function DropDown() {
 
     const { appState, dispatch } = useContext(AppContext);
+    const { match } = useContext(MatchContext);
+
     const navigation = useNavigation();
 
     const handleCreatePlayer = () => {
         navigation.navigate('create-player');
-        dispatch({type: OPTIONS_DROP_DOWN_OPEN,value: !appState.optionsOpen})
+        dispatch({ type: OPTIONS_DROP_DOWN_OPEN, value: !appState.optionsOpen })
     }
 
     const handlecreateMatch = () => {
         navigation.navigate('create-match');
-        dispatch({type: OPTIONS_DROP_DOWN_OPEN,value: !appState.optionsOpen})
+        dispatch({ type: OPTIONS_DROP_DOWN_OPEN, value: !appState.optionsOpen })
     }
 
     const handleAddPlayer = () => {
         navigation.navigate('add-player-to-match');
-        dispatch({type: OPTIONS_DROP_DOWN_OPEN,value: !appState.optionsOpen})
+        dispatch({ type: OPTIONS_DROP_DOWN_OPEN, value: !appState.optionsOpen })
     }
 
     if (!appState.optionsOpen) return null;
 
-    const handlePressEvent = (event) =>{
+    const handlePressEvent = (event) => {
         event.persist()
         console.log(event)
         return true
@@ -73,9 +76,11 @@ export default function DropDown() {
             <TouchableOpacity onPress={handlecreateMatch} style={styles.listItem}>
                 <Text>Create Match</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleAddPlayer} style={styles.listItem}>
-                <Text>Ad Player</Text>
-            </TouchableOpacity>
+            {
+                match.id && <TouchableOpacity onPress={handleAddPlayer} style={styles.listItem}>
+                    <Text>Ad Player</Text>
+                </TouchableOpacity>
+            }
         </View>
     )
 }

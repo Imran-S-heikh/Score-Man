@@ -19,10 +19,7 @@ const styles = StyleSheet.create({
 })
 
 export default function PlayerCard({ player }) {
-    useEffect(()=>{
-        console.log({type:typeof(player.batting)})
-        // console.log(player)
-    })
+   
     return (
         <Card title={player.name}>
             <View>
@@ -33,7 +30,7 @@ export default function PlayerCard({ player }) {
                     </View>
                     <View style={styles.item}>
                         <Text style={styles.label}>Runs: </Text>
-                        {/* <Text>{player.batting.reduce((accu,val)=>accu+val.total,0)}</Text> */}
+                        <Text>{player.batting.reduce((accu,val)=>accu+val.total,0)}</Text>
                     </View>
                 </View>
                 <View style={styles.itemContainer}>
@@ -43,7 +40,7 @@ export default function PlayerCard({ player }) {
                     </View>
                     <View style={styles.item}>
                         <Text style={styles.label}>Wickets: </Text>
-                        {/* <Text>{player.bowling.reduce((accu,val)=>accu+val.wicket,0)}</Text> */}
+                        <Text>{player.bowling.reduce((accu,val)=>accu+val.wicket,0)}</Text>
                     </View>
                 </View>
             </View>

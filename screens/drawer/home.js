@@ -59,17 +59,10 @@ function Home() {
 
 
     const { players } = useContext(PlayerContext);
-    
-    const [topBatsman,setTopBatsman] = useState([]);
-    const [topBowler,setTopBowler] = useState([]);
-    const inputRef = useRef();
-
-    useEffect(()=>{
-        if(players.length !== 0){
-            setTopBatsman(players.sort((a, b) => getVal(b) - getVal(a)))
-            setTopBowler(players.sort((a, b) => getWicket(b) - getWicket(a)))
-        }
-    },[players])
+    const topBatsman = players.sort((a, b) => getVal(b) - getVal(a))
+    const topThreeBatsman = topBatsman.slice(0, 3);
+    const topBowlers = players.sort((a, b) => getWicket(b) - getWicket(a))
+    const topThreeBowler = topBowlers.slice(0, 3);
 
 
     return (
@@ -77,7 +70,7 @@ function Home() {
             <View style={styles.contentWraper}>
                 <Text style={styles.header}>Highest Runs</Text>
                 <View >
-                    {topBatsman.slice(0, 3).map((player, i) =>
+                    {topThreeBatsman.map((player, i) =>
                         <ListItem
                             key={player.id}
                             leftElement={<Text style={[styles.leftElement, styles[i + 1]]} >{i + 1}</Text>}
@@ -93,7 +86,7 @@ function Home() {
             <View style={styles.contentWraper}>
                 <Text style={styles.header}>Highest Wickets</Text>
                 <View >
-                    {topBowler.slice(0, 3).map((player, i) =>
+                    {topThreeBowler.map((player, i) =>
                         <ListItem
                             key={player.id}
                             leftElement={<Text style={[styles.leftElement, styles[i + 1]]} >{i + 1}</Text>}

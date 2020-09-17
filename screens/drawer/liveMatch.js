@@ -2,7 +2,7 @@ import React, { useContext, useState, useRef, useEffect } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import MatchContextProvider, { MatchContext } from '../../contexts/match/matchContext'
 import { Divider, Button, Badge, Overlay, Icon, ButtonGroup } from 'react-native-elements';
-import { ScrollView } from 'react-native-gesture-handler';
+import { BaseButton, ScrollView } from 'react-native-gesture-handler';
 import { uuid } from '../../utils';
 import Popup from '../../components/Popup';
 import ExtraScore from '../../components/extraScore';
@@ -303,11 +303,13 @@ function LiveMatch() {
                 </View>
                 <View>
                     <View style={styles.row}>
-                        <View style={{ ...styles.row, padding: 0 }}>
-                            <Text style={styles.name}>{batsmanOne.name}</Text>
-                            <Text style={styles.battingScore}>: {batsmanOne.score.reduce(add, 0)}</Text>
-                            {striker.id === batsmanOne.id && <Badge status="error" v containerStyle={{ position: 'absolute', top: 0, right: 18 }} />}
-                        </View>
+                        <BaseButton onPress={() => setStriker(batsmanOne)}>
+                            <View style={{ ...styles.row, padding: 0 }}>
+                                <Text style={styles.name}>{batsmanOne.name}</Text>
+                                <Text style={styles.battingScore}>: {batsmanOne.score.reduce(add, 0)}</Text>
+                                {striker.id === batsmanOne.id && <Badge status="error" v containerStyle={{ position: 'absolute', top: 0, right: 18 }} />}
+                            </View>
+                        </BaseButton>
                         <View style={styles.battingHighlightContainer}>
                             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                                 {batsmanOne.score.map(value =>
@@ -319,12 +321,14 @@ function LiveMatch() {
                         </View>
                     </View>
                     <View style={{ ...styles.row, paddingTop: 0 }}>
-                        <View style={{ ...styles.row, padding: 0, position: 'relative' }}>
-                            <Text style={styles.name}>{batsmanTwo.name}</Text>
-                            <Text style={styles.battingScore}>: {batsmanTwo.score.reduce(add, 0)}</Text>
-                            {striker.id === batsmanTwo.id && <Badge status="error" v containerStyle={{ position: 'absolute', top: 0, right: 18 }} />}
-                            {/* <Text>/15</Text> */}
-                        </View>
+                        <BaseButton onPress={() => setStriker(batsmanTwo)}>
+                            <View style={{ ...styles.row, padding: 0, position: 'relative' }}>
+                                <Text style={styles.name}>{batsmanTwo.name}</Text>
+                                <Text style={styles.battingScore}>: {batsmanTwo.score.reduce(add, 0)}</Text>
+                                {striker.id === batsmanTwo.id && <Badge status="error" v containerStyle={{ position: 'absolute', top: 0, right: 18 }} />}
+                                {/* <Text>/15</Text> */}
+                            </View>
+                        </BaseButton>
                         <View style={styles.battingHighlightContainer}>
                             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                                 {batsmanTwo.score.map(value =>
@@ -394,8 +398,8 @@ function LiveMatch() {
             {/*  Score Update Section  */}
             {/* ********************** */}
 
-            <View style={styles.buttonsContainer}>
-                <View style={{ ...styles.buttonRow, marginBottom: 6 }}>
+            <View >
+                {/* <View style={{ ...styles.buttonRow, marginBottom: 6 }}>
                     <View style={{ flexGrow: 1 }}>
                         <Button onPress={() => setCustomOpen(!customOpen)} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, backgroundColor: '#fff' }} type="outline" title="Other" />
                         <CustomScore handler={updateScore} isOpen={customOpen} />
@@ -413,8 +417,8 @@ function LiveMatch() {
                         <Button onPress={() => setExtraOpen(!extraOpen)} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, marginRight: 0, backgroundColor: '#fff' }} type="outline" title="Extra" />
                         <ExtraScore isOpen={extraOpen} handler={updateScore} />
                     </View>
-                </View>
-                <View style={styles.buttonRow}>
+                </View> */}
+                {/* <View style={styles.buttonRow}>
                     <View style={{ flexGrow: 1 }}>
                         <Button onPress={() => updateScore('4')} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, backgroundColor: '#5CBC9F' }} title="4" />
                     </View>
@@ -423,6 +427,52 @@ function LiveMatch() {
                     </View>
                     <View style={{ flexGrow: 1 }}>
                         <Button onPress={() => updateScore('0')} titleStyle={styles.buttonTitle} buttonStyle={{ ...styles.button, marginRight: 0, backgroundColor: '#BCA75C' }} title="0" />
+                    </View>
+                </View> */}
+                <View style={{display: 'flex',flexDirection: 'row'}}>
+                    <View style={{ flex: 1 }}>
+                        <BaseButton  onPress={() => setCustomOpen(!customOpen)} style={{ ...styles.button, backgroundColor: '#fff' }}>
+                            <Text style={styles.buttonTitle}>Cust</Text>
+                        </BaseButton>
+                        <CustomScore handler={updateScore} isOpen={customOpen} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <BaseButton onPress={() => updateScore('wd',true)} style={{ ...styles.button, backgroundColor: '#A4A574' }}>
+                            <Text style={styles.buttonTitle}>WD</Text>
+                        </BaseButton>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <BaseButton onPress={() => updateScore('2')} style={{ ...styles.button, backgroundColor: '#909090' }}>
+                            <Text style={styles.buttonTitle}>2</Text>
+                        </BaseButton>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <BaseButton onPress={() => updateScore('w')} style={{ ...styles.button, backgroundColor: '#FF9595' }}>
+                            <Text style={styles.buttonTitle}>W</Text>
+                        </BaseButton>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <BaseButton onPress={() => setExtraOpen(!extraOpen)} style={{ ...styles.button, backgroundColor: '#fff' }}>
+                            <Text style={styles.buttonTitle}>EX</Text>
+                        </BaseButton>
+                        <ExtraScore isOpen={extraOpen} handler={updateScore} />
+                    </View>
+                </View>
+                <View style={{ display: "flex", flexDirection: 'row' }}>
+                    <View style={{ flex: 1 }}>
+                        <BaseButton onPress={() => updateScore('4')} style={{ ...styles.button, backgroundColor: '#5CBC9F' }}>
+                            <Text style={styles.buttonTitle}>4</Text>
+                        </BaseButton>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <BaseButton onPress={() => updateScore('1')} style={{ ...styles.button, backgroundColor: '#B0B0B0' }}>
+                            <Text style={styles.buttonTitle}>1</Text>
+                        </BaseButton>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <BaseButton onPress={() => updateScore('0')} style={{ ...styles.button, backgroundColor: '#BCA75C' }}>
+                            <Text style={styles.buttonTitle}>0</Text>
+                        </BaseButton>
                     </View>
                 </View>
             </View>
@@ -552,12 +602,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     button: {
-        paddingHorizontal: 20,
-        flexGrow: 1,
-        marginRight: 3
+        // paddingHorizontal: 20,
+        // flexGrow: 1,
+        // marginRight: 3
+        margin: 1,
+        borderRadius: 4
     },
     buttonTitle: {
-        fontSize: 18,
+        textAlign: 'center',
+        paddingVertical: 6,
+        fontWeight: 'bold',
+        fontSize: 22,
         color: '#000'
     },
     '4': {
