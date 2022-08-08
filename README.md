@@ -1,5 +1,5 @@
 # Score-Man
-A dedicated cross platform ios && android app for Counting Cricket Score
+A cross platform ios && android app for Counting Cricket Score
 
 connect any android phone(enable usb debuginh)
 and type- npx react-native run-android --variant=release
