@@ -1,0 +1,25 @@
+{
+  "name": "mobile",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-native": "*",
+    "@testing-library/react-native": "*",
+    "react": "*",
+    "react-native": "*",
+    "react-native-config": "*",
+    "react-native-svg": "*",
+    "@react-native-async-storage/async-storage": "*",
+    "react-native-gesture-handler": "*",
+    "@react-navigation/native": "*",
+    "@react-navigation/stack": "*",
+    "react-native-elements": "*",
+    "react-native-vector-icons": "*",
+    "react-native-screens": "*",
+    "metro-config": "*",
+    "@react-navigation/drawer": "*",
+    "@react-native-community/masked-view": "*",
+    "react-native-reanimated": "*",
+    "react-native-safe-area-context": "*"
+  }
+}

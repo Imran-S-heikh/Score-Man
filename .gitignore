@@ -1,6 +1,44 @@
-# OSX
-#
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+dist
+tmp
+/out-tsc
+
+# dependencies
+node_modules
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
 .DS_Store
+Thumbs.db
+
+# React Native
 
 # Xcode
 #
@@ -20,6 +58,7 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
+**/ios/.xcode.env.local
 
 # Android/IntelliJ
 #
@@ -28,16 +67,18 @@ build/
 .gradle
 local.properties
 *.iml
+*.hprof
 
 # node.js
 #
+.yarn/
 node_modules/
 npm-debug.log
 yarn-error.log
 
 # BUCK
 buck-out/
-\.buckd/
+.buckd/
 *.keystore
 !debug.keystore
 
@@ -48,12 +89,17 @@ buck-out/
 # For more information about the recommended setup visit:
 # https://docs.fastlane.tools/best-practices/source-control/
 
-*/fastlane/report.xml
-*/fastlane/Preview.html
-*/fastlane/screenshots
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
 
 # Bundle artifact
 *.jsbundle
 
-# CocoaPods
-/ios/Pods/
+# Ruby / CocoaPods
+**/ios/Pods/
+**/vendor/bundle/
+
+
+apps/mobile-e2e/artifacts
