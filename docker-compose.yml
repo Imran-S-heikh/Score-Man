@@ -1,0 +1,16 @@
+version: "3.7"
+
+services:
+  postgresql:
+    image: bitnami/postgresql
+    restart: always
+    environment:
+      - POSTGRESQL_USERNAME=${POSTGRESQL_USERNAME}
+      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+      - POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}
+    volumes:
+      - postgresql:/bitnami/postgresql
+    ports:
+      - 5433:5432
+volumes:
+  postgresql: null

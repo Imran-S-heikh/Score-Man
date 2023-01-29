@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id    Int     @id @unique @default(autoincrement())
+  email String  @unique
+  phone String? @unique
+  name  String?
+  // shots Shot[]
+  teams Team[]
+  // shots Ball[] @relation("batter")
+
+  balls  Ball[]  @relation("bowler")
+  shots  Ball[]  @relation("batter")
+  club   Club?   @relation(fields: [clubId], references: [id])
+  clubId String?
+}
+
+model Club {
+  id      String   @id @unique @default(cuid())
+  name    String   @unique
+  players Player[]
+  teams   Team[]
+  matches Match[]
+}
+
+enum InningsType {
+  FIRST
+  SECOND
+}
+
+model Innings {
+  id          String      @id @unique @default(cuid())
+  inningsType InningsType
+  match       Match       @relation(fields: [matchId], references: [id])
+  matchId     String
+
+  balls Ball[]
+}
+
+model Team {
+  id      String   @id @unique @default(cuid())
+  players Player[]
+  matches Match[]
+  club    Club?    @relation(fields: [clubId], references: [id])
+  clubId  String?
+}
+
+model Match {
+  id      String    @id @unique @default(cuid())
+  innings Innings[]
+  teams   Team[]
+  Club    Club?     @relation(fields: [clubId], references: [id])
+  clubId  String?
+}
+
+enum BallType {
+  LEGAL
+  NO
+  WIDE
+  DEAD
+}
+
+enum ScoreType {
+  REGULAR
+  WIDE
+  BYES
+  LEG_BYES
+  REGULAR_BYES
+  REGULAR_LEG_BYES
+}
+
+enum DismissalType {
+  NONE
+  BOWLED
+  CAUGHT
+  LBW
+  RUN_OUT
+  STUMPED
+  RETIRED
+  DOUBLE_HIT
+  HIT_WICKET
+  TIMEOUT
+  MANKAD
+}
+
+model Ball {
+  id String @id @unique @default(cuid())
+
+  // Relations
+  bowler    Player  @relation("bowler", fields: [bowlerId], references: [id])
+  batter    Player  @relation("batter", fields: [batterId], references: [id])
+  innings   Innings @relation(fields: [inningsId], references: [id])
+  bowlerId  Int
+  batterId  Int
+  inningsId String
+
+  // values
+  ballType      BallType      @default(LEGAL)
+  scoreType     ScoreType     @default(REGULAR)
+  dismissalType DismissalType @default(NONE)
+  bowledTime    DateTime
+
+  runs  Int @default(0)
+  extra Int @default(0)
+}

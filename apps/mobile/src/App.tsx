@@ -1,8 +1,8 @@
 import 'react-native-gesture-handler';
-import React, {useContext} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+import React, { Suspense, useContext, useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import Home from './screens/drawer/Home';
 import HeaderWraper from './components/HeaderWraper';
 import Players from './screens/drawer/Players';
@@ -16,24 +16,43 @@ import MatchContextProvider, {
   MatchContext,
 } from './contexts/match/matchContext';
 import AddPlayerToMatch from './screens/tabs/AddPlayerToMatch';
+import useClient from './hooks/client';
+import TrpcProvider from './contexts/trpc.context';
+import ClubScreen from './screens/drawer/Club';
+import ProfileScreen from './screens/drawer/Profile';
+import { RecoilRoot } from 'recoil';
+import Loader from './components/Loader';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 function Body() {
-  const {match, dispatch}:any = useContext(MatchContext);
+  const { match, dispatch }: any = useContext(MatchContext);
 
   return (
-    <Drawer.Navigator>
-      <Drawer.Screen name="Home" component={Home} />
-      <Drawer.Screen name="Players" component={Players} />
-      {match.id && <Drawer.Screen name="Live Match" component={LiveMatch} />}
-      <Drawer.Screen name="Do a Toss" component={Toss} />
-    </Drawer.Navigator>
+      <Drawer.Navigator>
+        <Drawer.Screen name="Home" component={Home} />
+        <Drawer.Screen name="Players" component={Players} />
+        {match.id && <Drawer.Screen name="Live Match" component={LiveMatch} />}
+        <Drawer.Screen name="Do a Toss" component={Toss} />
+        <Drawer.Screen name="Club" component={ClubScreen} />
+        <Drawer.Screen name="Profile" component={ProfileScreen} />
+      </Drawer.Navigator>
   );
 }
 
 const App = () => {
+  const client = useClient();
+
+  useEffect(() => {
+    (async () => {
+      console.log(fetch);
+      client.player.getPlayers.query().then(console.log).catch(console.log);
+
+      // const players = await fetch('http://192.168.0.101:4000/player.getPlayers');
+      // console.log(players)
+    })();
+  }, []);
 
   return (
     <NavigationContainer>
@@ -51,13 +70,17 @@ const App = () => {
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
+};
 
 const AppWraper = () => (
   <AppContextProvider>
     <MatchContextProvider>
       <PlayerContextProvider>
-        <App />
+        <RecoilRoot>
+          <TrpcProvider>
+            <App />
+          </TrpcProvider>
+        </RecoilRoot>
       </PlayerContextProvider>
     </MatchContextProvider>
   </AppContextProvider>

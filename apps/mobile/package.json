@@ -20,6 +20,15 @@
     "@react-navigation/drawer": "*",
     "@react-native-community/masked-view": "*",
     "react-native-reanimated": "*",
-    "react-native-safe-area-context": "*"
+    "react-native-safe-area-context": "*",
+    "@prisma/client": "*",
+    "zod": "*",
+    "@trpc/server": "*",
+    "express": "*",
+    "@nrwl/webpack": "*",
+    "@trpc/client": "*",
+    "superjson": "*",
+    "recoil": "*",
+    "nativewind": "*"
   }
 }
