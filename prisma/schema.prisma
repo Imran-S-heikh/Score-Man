@@ -19,16 +19,19 @@ model Player {
   teams Team[]
   // shots Ball[] @relation("batter")
 
-  balls  Ball[]  @relation("bowler")
-  shots  Ball[]  @relation("batter")
-  club   Club?   @relation(fields: [clubId], references: [id])
-  clubId String?
+  balls     Ball[]  @relation("bowler")
+  shots     Ball[]  @relation("batter")
+  club      Club?   @relation("club", fields: [clubId], references: [id])
+  clubId    String?
+  ownedClub Club?   @relation("owner")
 }
 
 model Club {
   id      String   @id @unique @default(cuid())
   name    String   @unique
-  players Player[]
+  owner   Player?  @relation("owner", fields: [ownerId], references: [id])
+  ownerId Int      @unique
+  players Player[] @relation("club")
   teams   Team[]
   matches Match[]
 }

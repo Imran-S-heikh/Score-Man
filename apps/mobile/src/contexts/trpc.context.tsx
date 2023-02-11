@@ -3,7 +3,7 @@ import { getTrpcClient, TrpcClient } from '../lib/trpc';
 
 export const TrpcClientContext = createContext({} as TrpcClient);
 
-function TrpcProvider({ children }) {
+function TrpcProvider({ children }: any) {
   const client = useMemo(() => {
     return getTrpcClient();
   }, []);

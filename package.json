@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "dev:mobile": "yarn nx start mobile",
     "dev:android": "yarn nx run-android mobile",
     "database:up": "sudo docker-compose up",
     "database:down": "sudo docker-compose down",

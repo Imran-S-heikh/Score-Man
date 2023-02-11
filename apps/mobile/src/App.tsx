@@ -18,7 +18,7 @@ import MatchContextProvider, {
 import AddPlayerToMatch from './screens/tabs/AddPlayerToMatch';
 import useClient from './hooks/client';
 import TrpcProvider from './contexts/trpc.context';
-import ClubScreen from './screens/drawer/Club';
+import ClubScreen from './screens/drawer/club/Club.screen';
 import ProfileScreen from './screens/drawer/Profile';
 import { RecoilRoot } from 'recoil';
 import Loader from './components/Loader';

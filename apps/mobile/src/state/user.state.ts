@@ -1,13 +1,28 @@
-import {atom} from "recoil"
+import { Player } from '@prisma/client';
+import { atom } from 'recoil';
+import { LocalStoreKey } from '../lib/conts';
+import { TrpcClient } from "../lib/trpc";
+import { Signup } from "../lib/types";
+import { getLocalData, removeLocalData, setLocalData } from '../lib/util';
 
-export const UserState = atom({
-    key: "USER_STATE",
-    default: new Promise(async (resolve)=>{
-        // setTimeout(() => {
-        //     resolve({
-        //         name: "imran",
-        //         age: 23
-        //     })
-        // }, 1000 * 5);
-    }) 
+/** Current User Details */
+export const UserState = atom<Awaited<ReturnType<Signup>> | null>({
+  key: 'USER_STATE',
+  default: new Promise(async (setSelf) => {
+    /** Get User Details form localstorage */
+    const user = await getLocalData(LocalStoreKey.CurrentUser);
+
+    setSelf(user);
+  }),
+
+  effects: [
+    ({ onSet }) =>
+      onSet((state) => {
+        if (state) {
+          setLocalData(LocalStoreKey.CurrentUser, state);
+        } else {
+          removeLocalData(LocalStoreKey.CurrentUser);
+        }
+      }),
+  ],
 });
