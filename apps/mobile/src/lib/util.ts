@@ -3,7 +3,7 @@ import { LocalStore, LocalStoreKey } from './conts';
 
 export async function getLocalData<Key extends LocalStoreKey>(
   key: Key,
-  id?: string
+  id?: string | number
 ) {
   const data = await AsyncStorage.getItem(id ? `${key}-${id}` : key);
 
@@ -21,7 +21,7 @@ export async function getLocalData<Key extends LocalStoreKey>(
 export async function setLocalData<Key extends LocalStoreKey>(
   key: Key,
   data: LocalStore[Key],
-  id?: string
+  id?: string | number
 ) {
   try {
     await AsyncStorage.setItem(id ? `${key}-${id}` : key, JSON.stringify(data));
@@ -34,7 +34,7 @@ export async function setLocalData<Key extends LocalStoreKey>(
 
 export async function removeLocalData<Key extends LocalStoreKey>(
   key: Key,
-  id?: string
+  id?: string | number
 ) {
   try {
     await AsyncStorage.removeItem(id ? `${key}-${id}` : key);

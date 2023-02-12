@@ -24,6 +24,7 @@ model Player {
   club      Club?   @relation("club", fields: [clubId], references: [id])
   clubId    String?
   ownedClub Club?   @relation("owner")
+  joinRequests Club[]
 }
 
 model Club {
@@ -34,6 +35,7 @@ model Club {
   players Player[] @relation("club")
   teams   Team[]
   matches Match[]
+  joinRequests Player[]
 }
 
 enum InningsType {
