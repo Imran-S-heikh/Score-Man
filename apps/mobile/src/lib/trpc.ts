@@ -1,11 +1,11 @@
 import type { AppRouter } from '../../../server/src/app';
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 // import superjson from 'superjson';
-
+export {AppRouter}
 const config = {
   links: [
     httpBatchLink({
-      url: 'http://192.168.0.101:4000/trpc',
+      url: 'http://192.168.0.104:4000/trpc',
     }),
   ],
   // transformer: superjson

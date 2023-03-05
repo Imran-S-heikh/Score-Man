@@ -6,7 +6,7 @@ export async function getLocalData<Key extends LocalStoreKey>(
   id?: string | number
 ) {
   const data = await AsyncStorage.getItem(id ? `${key}-${id}` : key);
-
+  console.log('Data form local storage as stirng',data,typeof data);
   if (!data) {
     return null;
   }

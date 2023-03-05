@@ -5,10 +5,13 @@ export const clubRouter = router({
   getClub: procedure.input(z.string()).query(async ({ input, ctx }) => {
     const club = await ctx.prisma.club.findUnique({
       where: { id: input },
-      include: { joinRequests: { select: { id: true } } },
+      include: {
+        joinRequests: { select: { id: true } },
+        players: { select: { id: true } },
+      },
     });
 
-    return club ;
+    return club;
   }),
   getClubByOwner: procedure.input(z.number()).query(async ({ input, ctx }) => {
     return await ctx.prisma.club.findUnique({ where: { ownerId: input } });
@@ -25,7 +28,7 @@ export const clubRouter = router({
         data: {
           name: input.name,
           ownerId: input.userId,
-        }
+        },
       });
 
       return club;
@@ -35,10 +38,10 @@ export const clubRouter = router({
       include: {
         joinRequests: {
           select: {
-            id: true
-          }
-        }
-      }
+            id: true,
+          },
+        },
+      },
     });
 
     return clubs;
@@ -55,7 +58,7 @@ export const clubRouter = router({
       },
     });
 
-    return club.joinRequests;
+    return club?.joinRequests;
   }),
 
   sendJoinRequest: procedure
@@ -104,5 +107,28 @@ export const clubRouter = router({
       });
 
       return Boolean(updated);
+    }),
+
+  acceptJoinRequest: procedure
+    .input(
+      z.object({
+        clubId: z.string(),
+        playerId: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const club = await ctx.prisma.club.update({
+        where: { id: input.clubId },
+        data: {
+          joinRequests: {
+            disconnect: { id: input.playerId },
+          },
+          players: {
+            connect: { id: input.playerId },
+          },
+        },
+      });
+
+      return Boolean(club);
     }),
 });

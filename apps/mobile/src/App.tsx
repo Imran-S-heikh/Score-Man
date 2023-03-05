@@ -16,7 +16,7 @@ import MatchContextProvider, {
   MatchContext,
 } from './contexts/match/matchContext';
 import AddPlayerToMatch from './screens/tabs/AddPlayerToMatch';
-import useClient from './hooks/client';
+import useClient, { usePlayerUtils } from './hooks/client';
 import TrpcProvider from './contexts/trpc.context';
 import ClubScreen from './screens/drawer/club/Club.screen';
 import ProfileScreen from './screens/drawer/Profile';
@@ -30,28 +30,22 @@ function Body() {
   const { match, dispatch }: any = useContext(MatchContext);
 
   return (
-      <Drawer.Navigator>
-        <Drawer.Screen name="Home" component={Home} />
-        <Drawer.Screen name="Players" component={Players} />
-        {match.id && <Drawer.Screen name="Live Match" component={LiveMatch} />}
-        <Drawer.Screen name="Do a Toss" component={Toss} />
-        <Drawer.Screen name="Club" component={ClubScreen} />
-        <Drawer.Screen name="Profile" component={ProfileScreen} />
-      </Drawer.Navigator>
+    <Drawer.Navigator>
+      <Drawer.Screen name="Home" component={Home} />
+      <Drawer.Screen name="Players" component={Players} />
+      {match.id && <Drawer.Screen name="Live Match" component={LiveMatch} />}
+      <Drawer.Screen name="Do a Toss" component={Toss} />
+      <Drawer.Screen name="Club" component={ClubScreen} />
+      <Drawer.Screen name="Profile" component={ProfileScreen} />
+    </Drawer.Navigator>
   );
 }
 
 const App = () => {
-  const client = useClient();
+  const { refetchUser } = usePlayerUtils();
 
   useEffect(() => {
-    (async () => {
-      console.log(fetch);
-      client.player.getPlayers.query().then(console.log).catch(console.log);
-
-      // const players = await fetch('http://192.168.0.101:4000/player.getPlayers');
-      // console.log(players)
-    })();
+    refetchUser();
   }, []);
 
   return (

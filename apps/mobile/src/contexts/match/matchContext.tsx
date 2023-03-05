@@ -22,9 +22,9 @@ const initialState = {
     bowlingTeam: {name: 'Team Two',ref: 'teamTwo'}
 }
 
-export const MatchContext = createContext();
+export const MatchContext = createContext(null);
 
-export default function MatchContextProvider(props) {
+export default function MatchContextProvider(props: any) {
 
     const [match,dispatch] = useReducer(matchReducer,initialState)
 
@@ -32,7 +32,7 @@ export default function MatchContextProvider(props) {
         async function getCurrentMatch() {
             const liveMatch = await AsyncStorage.getItem('@liveMatch');
             if(liveMatch){
-                dispatch({type: CREATE_MATCH,value: JSON.parse(liveMatch)})
+                (dispatch as any)({type: CREATE_MATCH,value: JSON.parse(liveMatch)})
             }
         }
         getCurrentMatch();

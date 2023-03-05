@@ -1,9 +1,10 @@
 import { Club, Prisma } from '@prisma/client';
+import { inferRouterOutputs,Simplify } from "@trpc/server";
 import { authRouter } from 'apps/server/src/app/routers/auth/auth.router';
-import { TrpcClient } from './trpc';
+import { TrpcClient,AppRouter } from './trpc';
 
 export type Param = string | null | undefined | number;
 
-export type Signup = TrpcClient['auth']['signup']['mutate'];
+export type Signup = Simplify<inferRouterOutputs<AppRouter>['auth']['signup']>;
 
-export type ClubStateInterface = Awaited<ReturnType<TrpcClient['club']['getClub']['query']>>
+export type ClubStateInterface = Simplify<inferRouterOutputs<AppRouter>['club']['getClub']>

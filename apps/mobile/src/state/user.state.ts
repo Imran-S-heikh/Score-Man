@@ -1,12 +1,12 @@
 import { Player } from '@prisma/client';
-import { atom, atomFamily } from 'recoil';
+import { atom, atomFamily, selector } from 'recoil';
 import { LocalStoreKey } from '../lib/conts';
 import { getTrpcClient, TrpcClient } from '../lib/trpc';
 import { Param, Signup } from '../lib/types';
 import { getLocalData, removeLocalData, setLocalData } from '../lib/util';
 
 /** Current User Details */
-export const UserState = atom<Awaited<ReturnType<Signup>> | null>({
+export const UserState = atom<Signup | null>({
   key: 'USER_STATE',
   default: new Promise(async (setSelf) => {
     /** Get User Details form localstorage */
@@ -46,18 +46,26 @@ export const PlayerState = atomFamily<Player | null, Param>({
         const client = getTrpcClient();
         const player = await client.player.getPlayer.query(playerId as number);
         if (player) {
-          return setSelf(player)
+          return setSelf(player);
         }
       }
 
-      setSelf(null)
+      setSelf(null);
     }),
   effects(playerId: Param) {
     return [
       ({ onSet }) =>
         onSet(async (player) => {
+          console.log('OnSetTrigerred', player);
           if (player) {
-            return setLocalData(LocalStoreKey.Player, player, player.id);
+            const updated = setLocalData(
+              LocalStoreKey.Player,
+              player,
+              player.id
+            );
+            const data = getLocalData(LocalStoreKey.Player, player.id);
+            console.log('Updated Data', data);
+            return;
           }
 
           if (playerId) {
@@ -65,5 +73,30 @@ export const PlayerState = atomFamily<Player | null, Param>({
           }
         }),
     ];
+  },
+});
+
+export const PlayerUtils = selector({
+  key: 'PlayerUtils',
+  get({ getCallback }) {
+    const refetchUser = getCallback(
+      ({ set, snapshot: { getPromise } }) =>
+        async () => {
+          const oldUser = await getPromise(UserState);
+
+          if (oldUser?.id) {
+            const client = getTrpcClient();
+            const user = await client.player.getUser
+              .query(oldUser.id)
+              .catch(() => null);
+            if (user) {
+              // set(PlayerState(user.id), user);
+              set(UserState, user as any);
+            }
+          }
+        }
+    );
+
+    return { refetchUser };
   },
 });
