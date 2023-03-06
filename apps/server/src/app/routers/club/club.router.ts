@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { string, z } from 'zod';
 import { procedure, router } from '../../../lib/trpc';
 
 export const clubRouter = router({
@@ -130,5 +130,43 @@ export const clubRouter = router({
       });
 
       return Boolean(club);
+    }),
+
+  declineJoinRequest: procedure
+    .input(z.object({ clubOwnerId: z.number(), playerId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.club.update({
+        where: { ownerId: input.clubOwnerId },
+        data: {
+          joinRequests: {
+            disconnect: { id: input.playerId },
+          },
+        },
+        include: {
+          joinRequests: {
+            select: { id: true },
+          },
+          players: {
+            select: { id: true },
+          },
+        },
+      });
+    }),
+
+  kickFromClub: procedure
+    .input(z.object({ clubOwnerId: z.number(), playerId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.club.update({
+        where: { ownerId: input.clubOwnerId },
+        data: {
+          players: {
+            disconnect: { id: input.playerId },
+          },
+        },
+        include: {
+          joinRequests: { select: { id: true } },
+          players: { select: { id: true } },
+        },
+      });
     }),
 });

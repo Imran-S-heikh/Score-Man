@@ -62,7 +62,7 @@ export const JoinedClubState = selector({
   async get({ get, getCallback }) {
     const user = await get(noWait(UserState)).toPromise();
 
-    console.log({userInCLud: user});
+    console.log({ userInCLud: user });
 
     if (!user?.clubId) {
       return null;
@@ -280,18 +280,15 @@ export const ClubState = atomFamily<ClubStateInterface | null, Param>({
 export const ClubUtils = selector({
   key: 'ClubUtils',
   get({ getCallback }) {
-    const refetchClub = getCallback(
-      ({ set }) =>
-        async (clubId: string) => {
-          const client = getTrpcClient();
-          const club = await client.club.getClub.query(clubId);
+    const refetchClub = getCallback(({ set }) => async (clubId: string) => {
+      const client = getTrpcClient();
+      const club = await client.club.getClub.query(clubId);
 
-          if (club) {
-            set(ClubState(clubId), club);
-          }
-        }
-    );
+      if (club) {
+        set(ClubState(clubId), club);
+      }
+    });
 
-    return {refetchClub};
+    return { refetchClub };
   },
 });

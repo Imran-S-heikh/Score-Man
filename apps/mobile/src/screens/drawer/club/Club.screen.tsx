@@ -5,11 +5,7 @@ import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Button, Dialog, Input } from 'react-native-elements';
 import {
-  DefaultValue,
-  useRecoilRefresher_UNSTABLE,
-  useRecoilState,
   useRecoilValue,
-  useResetRecoilState,
   useSetRecoilState,
 } from 'recoil';
 import {
@@ -22,10 +18,26 @@ import {
 } from './club.state';
 
 import ButtonLoading from '../../../components/Button';
+import useClient from 'apps/mobile/src/hooks/client';
 
 function AcceptRequestItem({ playerId }: { playerId: number }) {
+  const client = useClient();
   const player = useRecoilValue(PlayerState(playerId));
+  const { club } = useRecoilValue(OwnedClubState);
   const { acceptPlayerRequest } = useRecoilValue(AcceptClubHandler);
+  const setClub = useSetRecoilState(ClubState(club?.id));
+
+  const declineJoinRequest = async () => {
+    if (club) {
+      const updated = await client.club.declineJoinRequest.mutate({
+        clubOwnerId: club?.ownerId,
+        playerId,
+      });
+
+      setClub(updated);
+    }
+  };
+
   return (
     <View className="flex flex-row justify-between items-center mt-3">
       <Text className="text-lg font-bold">{player?.name}</Text>
@@ -35,6 +47,7 @@ function AcceptRequestItem({ playerId }: { playerId: number }) {
           buttonStyle={{ height: 30, backgroundColor: '#860c0c' }}
           titleStyle={{ fontSize: 10 }}
           title="Decline"
+          onPress={declineJoinRequest}
         />
         <View className="w-2" />
         <Button
@@ -50,6 +63,20 @@ function AcceptRequestItem({ playerId }: { playerId: number }) {
 
 function ClubPlayerItem({ playerId }: { playerId: number }) {
   const player = useRecoilValue(PlayerState(playerId));
+  const { club } = useRecoilValue(OwnedClubState);
+  const setClub = useSetRecoilState(ClubState(club?.id));
+  const client = useClient();
+
+  const kickPlayer = async () => {
+    if (club) {
+      const updated = await client.club.kickFromClub.mutate({
+        playerId,
+        clubOwnerId: club?.ownerId,
+      });
+
+      setClub(updated);
+    }
+  };
 
   return (
     <View className="flex flex-row justify-between items-center mt-1">
@@ -60,6 +87,7 @@ function ClubPlayerItem({ playerId }: { playerId: number }) {
           buttonStyle={{ height: 30, backgroundColor: '#860c0c' }}
           titleStyle={{ fontSize: 10 }}
           title="Kick"
+          onPress={kickPlayer}
         />
       </View>
     </View>
