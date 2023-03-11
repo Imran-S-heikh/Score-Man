@@ -20,4 +20,16 @@ export const playerRouter = router({
   getPlayer: procedure.input(z.number()).query(async ({ input, ctx }) => {
     return ctx.prisma.player.findUnique({ where: { id: input } });
   }),
+  leaveJoinedClub: procedure
+    .input(z.object({ playerId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const updated = await ctx.prisma.player.update({
+        where: { id: input.playerId },
+        data: {
+          club: { disconnect: true },
+        },
+      });
+
+      return updated;
+    }),
 });

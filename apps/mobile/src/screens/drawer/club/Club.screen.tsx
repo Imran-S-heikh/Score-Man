@@ -1,13 +1,10 @@
 import Hide from 'apps/mobile/src/components/Hide';
 import { useClubUtils } from 'apps/mobile/src/hooks/club';
-import { PlayerState } from 'apps/mobile/src/state/user.state';
+import { PlayerState, UserState } from 'apps/mobile/src/state/user.state';
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Button, Dialog, Input } from 'react-native-elements';
-import {
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   AcceptClubHandler,
   ClubState,
@@ -215,10 +212,23 @@ function JoinClubPopup() {
 
 function JoinedClub() {
   const club = useRecoilValue(JoinedClubState);
+  const [user, setUser] = useRecoilState(UserState);
   const { refetchClub } = useClubUtils();
+  const {
+    player: { leaveJoinedClub },
+  } = useClient();
 
   if (!club) {
     return <JoinClubPopup />;
+  }
+
+  async function handleLeaveJoinedClub() {
+    if (user) {
+      const updated = await leaveJoinedClub.mutate({ playerId: user.id });
+      if (updated) {
+        setUser((pre) => pre && { ...pre, ...updated });
+      }
+    }
   }
 
   return (
@@ -232,9 +242,16 @@ function JoinedClub() {
           titleStyle={{ fontSize: 10 }}
         ></ButtonLoading>
       </View>
-      <View className="border border-black/50 rounded px-3 mt-3">
-        <Text className="text-xl font-bold">Club Name: {club.name}</Text>
-        <Text className="text-xl font-bold">Club ID: {club.id}</Text>
+      <View>
+        <View className="border border-black/50 rounded px-3 mt-3 mb-3">
+          <Text className="text-xl font-bold">Club Name: {club.name}</Text>
+          <Text className="text-xl font-bold">Club ID: {club.id}</Text>
+        </View>
+        <ButtonLoading
+          onPress={handleLeaveJoinedClub}
+          title="Leave Club"
+          className="mt-6 hidden"
+        ></ButtonLoading>
       </View>
     </View>
   );
